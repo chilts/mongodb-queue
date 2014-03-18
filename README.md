@@ -91,6 +91,21 @@ var queue = Queue(db, 'my-queue', { visibility : 15 })
 All messages in this queue now have a visibility window of 15s, instead of the
 default 30s.
 
+## Use of MongoDB ##
+
+Whilst using MongoDB recently and having a need for lightweight queues, I realised
+that the atomic operations that MongoDB provides are ideal for this kind of job.
+
+Since everything it atomic, it is impossible to lose messages in or around your
+application. I guess MongoDB could lose them but it's a safer bet it won't compared
+to your own application.
+
+As an example of the atomic nature being used, messages stay in the same collection
+and are never moved around or deleted, just a couple of fields are set, incremented
+or deleted. We always use MongoDB's excellent `collection.findAndModify()` so that
+each message is updated atomically inside MongoDB and we never have to fetch something,
+change it and store it back.
+
 ## Author ##
 
 Written by [Andrew Chilton](http://chilts.org/) -
