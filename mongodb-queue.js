@@ -76,7 +76,12 @@ Queue.prototype.get = function(callback) {
 
     self.msgs.findAndModify(query, sort, update, { new : true }, function(err, msg) {
         if (err) return callback(err)
-        callback(null, { id : msg.id, ack : msg.ack, payload : msg.payload })
+        callback(null, {
+            id      : msg.id,
+            ack     : msg.ack,
+            payload : msg.payload,
+            tries   : msg.tries,
+        })
     })
 }
 

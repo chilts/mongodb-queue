@@ -4,7 +4,7 @@ var test = require('tape')
 
 var Queue = require('../')
 
-var conStr = 'mongodb://localhost:27017/msgs'
+var conStr = 'mongodb://localhost:27017/mongodb-queue'
 
 test('first test', function(t) {
     mongodb.MongoClient.connect(conStr, function(err, db) {
@@ -35,7 +35,12 @@ test('single round trip', function(t) {
                     queue.get(function(err, thisMsg) {
                         msg = thisMsg
                         t.ok(msg.id, 'Got a msg.id')
+                        t.equal(typeof msg.id, 'string', 'msg.id is a string')
                         t.ok(msg.ack, 'Got a msg.ack')
+                        t.equal(typeof msg.ack, 'string', 'msg.ack is a string')
+                        t.ok(msg.tries, 'Got a msg.tries')
+                        t.equal(typeof msg.tries, 'number', 'msg.tries is a number')
+                        t.equal(msg.tries, 1, 'msg.tries is currently one')
                         t.equal(msg.payload, 'Hello, World!', 'Payload is correct')
                         next()
                     })
