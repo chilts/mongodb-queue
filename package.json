@@ -1,0 +1,41 @@
+{
+  "name": "mongodb-queue",
+  "version": "0.1.0",
+  "description": "Message queues which uses MongoDB.",
+  "main": "mongodb-queue.js",
+  "author": {
+    "name": "Andrew Chilton",
+    "email": "andychilton@gmail.com",
+    "url": "http://www.chilts.org/"
+  },
+  "homepage": "https://github.com/chilts/mongodb-queue",
+  "contributors": [],
+  "dependencies": {},
+  "devDependencies": {
+    "tape": "^2.10.2",
+    "mongodb": "^1.3.23",
+    "async": "^0.2.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/chilts/mongodb-queue.git"
+  },
+  "bugs": {
+    "url": "http://github.com/chilts/mongodb-queue/issues",
+    "mail": "andychilton@gmail.com"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://chilts.mit-license.org/2014/"
+    }
+  ],
+  "keywords": [
+    "mongodb",
+    "queue",
+    ""
+  ],
+  "scripts": {
+    "test": "set -e; for FILE in test/*.js; do node $FILE; done"
+  }
+}
