@@ -106,6 +106,21 @@ or deleted. We always use MongoDB's excellent `collection.findAndModify()` so th
 each message is updated atomically inside MongoDB and we never have to fetch something,
 change it and store it back.
 
+## Releases ##
+
+### 0.2.0 (2014-03-18) ###
+
+* [NEW] messages now return number of tries (times they have been fetched)
+
+### 0.1.0 (2014-03-18) ###
+
+* [NEW] add messages to queues
+* [NEW] fetch messages from queues
+* [NEW] ack messages on queues
+* [NEW] set up multiple queues
+* [NEW] set your own MongoDB Collection name
+* [NEW] set a visibility timeout on a queue
+
 ## Author ##
 
 Written by [Andrew Chilton](http://chilts.org/) -
