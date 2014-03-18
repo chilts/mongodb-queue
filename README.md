@@ -1,5 +1,7 @@
 # mongodb-queue #
 
+[![Build Status](https://travis-ci.org/chilts/mongodb-queue.png)](https://travis-ci.org/chilts/mongodb-queue) [![NPM](https://nodei.co/npm/mongodb-queue.png?mini=true)](https://nodei.co/npm/mongodb-queue/)
+
 ## Synopsis ##
 
 Create a connection to MongoDB to create a queue object:
