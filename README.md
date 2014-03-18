@@ -4,11 +4,12 @@
 
 ## Synopsis ##
 
-Create a connection to MongoDB to create a queue object:
+Create a connection to your MongoDB database, and use it to create a queue object:
 
 ```js
 var mongodb = require('mongodb')
-mongodb.MongoClient.connect(conStr, function(err, db) {
+var con = 'mongodb://localhost:27017/test'
+mongodb.MongoClient.connect(con, function(err, db) {
     var queue = Queue(db, 'my-queue')
 })
 ```
