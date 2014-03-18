@@ -10,6 +10,9 @@
   },
   "homepage": "https://github.com/chilts/mongodb-queue",
   "contributors": [],
+  "engines" : {
+    "node": ">= 0.10"
+  },
   "dependencies": {},
   "devDependencies": {
     "tape": "^2.10.2",
