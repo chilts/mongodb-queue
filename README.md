@@ -43,33 +43,33 @@ queue.ack(msg.id, msg.ack, function(err) {
 
 Default: `'msgs'`
 
-This is the name of the collection you wish to use. Note: we only use one
-collection for each queue instantiated. In fact, you can use the same collection
-for multiple queues.
+This is the name of the MongoDB Collection you wish to use to store the messages.
+By default we only use this one MongoDB Collection, unless you specify an
+alternate one.
 
-e.g. both of these queue use the same `'msgs'` collection:
+e.g. both of these queues use the same `'msgs'` collection by default:
 
 ```
 var resizeQueue = Queue(db, 'resize-image')
 var uploadQueue = Queue(db, 'upload-image')
 ```
 
-e.g. these both use the `'app'` collection:
+e.g. both of these queue use the MongoDB Collection named `'app'`:
 
 ```
 var resizeQueue = Queue(db, 'resize-image', { collectionName : 'app' })
 var uploadQueue = Queue(db, 'upload-image', { collectionName : 'app' })
 ```
 
-e.g. these use both the `'msgs'` and `'app'` collections:
+e.g. these two queue use different MongoDB Collections, `'msgs'` and `'app'` respectively:
 
 ```
 var resizeQueue = Queue(db, 'resize-image')
 var uploadQueue = Queue(db, 'upload-image', { collectionName : 'app' })
 ```
 
-It shouldn't be a problem if you generally use the same MongoDB Collection
-however you may wish to change this if you have high throughput.
+Using the default MongoDB Collection for all of your queues shouldn't cause a problem
+but you may wish to use a different collection per queue if you have a high throughput.
 
 ### Message Visibility Window ###
 
@@ -86,7 +86,8 @@ visibility to 15 seconds:
 var queue = Queue(db, 'my-queue', { visibility : 15 })
 ```
 
-All messages in this queue now have a visibility window of 15s.
+All messages in this queue now have a visibility window of 15s, instead of the
+default 30s.
 
 ## Author ##
 
