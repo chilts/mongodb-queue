@@ -126,6 +126,10 @@ change it and store it back.
 
 ## Releases ##
 
+### 0.3.1 (2014-03-19) ###
+
+* [DOC] Added documentation for the `delay` option
+
 ### 0.3.0 (2014-03-19) ###
 
 * [NEW] Return the message id when added to a queue
