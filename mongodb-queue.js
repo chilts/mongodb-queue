@@ -43,15 +43,17 @@ function Queue(mongoDbClient, queueName, opts) {
 Queue.prototype.add = function(payload, callback) {
     var self = this
     var aDate = date()
+    var thisId = id()
     var msg = {
         queue    : self.queueName,
-        id       : id(),
+        id       : thisId,
         inserted : aDate,
         visible  : aDate,
         payload  : payload,
     }
     self.msgs.insert(msg, function(err) {
-        callback(err)
+        if (err) return callback(err)
+        callback(null, thisId)
     })
 }
 

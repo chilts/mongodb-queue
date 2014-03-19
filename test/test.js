@@ -23,8 +23,9 @@ setup(function(db) {
         async.series(
             [
                 function(next) {
-                    queue.add('Hello, World!', function(err) {
+                    queue.add('Hello, World!', function(err, id) {
                         t.ok(!err, 'There is no error when adding a message.')
+                        t.ok(id, 'Received an id for this message')
                         next()
                     })
                 },
