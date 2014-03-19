@@ -92,6 +92,23 @@ var queue = Queue(db, 'my-queue', { visibility : 15 })
 All messages in this queue now have a visibility window of 15s, instead of the
 default 30s.
 
+### Delay Messages on Queue ###
+
+Default: `0`
+
+When a message is added to a queue, it is immediately available for retrieval.
+However, there are times when you might like to delay messages coming off a queue.
+ie. if you set delay to be `10`, then every message will only be available for
+retrieval 10s after being added.
+
+To delay all messages by 10 seconds, try this:
+
+```
+var queue = Queue(db, 'my-queue', { delay : 10 })
+```
+
+This is now the default for every message added to the queue.
+
 ## Use of MongoDB ##
 
 Whilst using MongoDB recently and having a need for lightweight queues, I realised
