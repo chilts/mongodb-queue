@@ -109,6 +109,15 @@ change it and store it back.
 
 ## Releases ##
 
+### 0.3.0 (2014-03-19) ###
+
+* [NEW] Return the message id when added to a queue
+* [NEW] Ability to set a default delay on all messages in a queue
+* [FIX] Make sure old messages (outside of visibility window) aren't deleted when acked
+* [FIX] Internal: Fix `queueName`
+* [TEST] Added test for multiple messages
+* [TEST] Added test for delayed messages
+
 ### 0.2.1 (2014-03-19) ###
 
 * [FIX] Fix when getting messages off an empty queue
