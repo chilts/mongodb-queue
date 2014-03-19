@@ -19,6 +19,10 @@ function id() {
 function date() {
     return (new Date()).toISOString()
 }
+function datePlus(date, s) {
+    var delayDate = (new Date(date)).getTime() + s * 1000
+    return (new Date(delayDate)).toISOString()
+}
 
 // the Queue object itself
 function Queue(mongoDbClient, queueName, opts) {
@@ -38,17 +42,22 @@ function Queue(mongoDbClient, queueName, opts) {
     this.msgs = mongoDbClient.collection(opts.collectionName)
     this.queueName = queueName
     this.visibility = opts.visibility || 30
+    this.delay = opts.delay || 0
 }
 
 Queue.prototype.add = function(payload, callback) {
     var self = this
     var aDate = date()
+    var delayDate
+    if ( self.delay ) {
+        delayDate = datePlus(aDate, self.delay)
+    }
     var thisId = id()
     var msg = {
         queue    : self.queueName,
         id       : thisId,
         inserted : aDate,
-        visible  : aDate,
+        visible  : delayDate || aDate,
         payload  : payload,
     }
     self.msgs.insert(msg, function(err) {
