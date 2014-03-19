@@ -36,7 +36,7 @@ function Queue(mongoDbClient, queueName, opts) {
 
     // this.db = mongoDbClient
     this.msgs = mongoDbClient.collection(opts.collectionName)
-    this.queueName = opts.queueName
+    this.queueName = queueName
     this.visibility = opts.visibility || 30
 }
 
