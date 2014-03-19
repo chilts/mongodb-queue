@@ -1,24 +1,21 @@
 var mongodb = require('mongodb')
 var async = require('async')
 var test = require('tape')
-
 var Queue = require('../')
+
+var setup = require('./setup.js')
 
 var conStr = 'mongodb://localhost:27017/mongodb-queue'
 
-test('first test', function(t) {
-    mongodb.MongoClient.connect(conStr, function(err, db) {
-        if (err) return t.fail(err)
-        var queue = Queue(db, 'test')
-        t.pass('This is a test.')
-        t.end()
-        db.close()
-    })
-});
+setup(function(db) {
 
-test('single round trip', function(t) {
-    mongodb.MongoClient.connect(conStr, function(err, db) {
-        if (err) return t.fail(err)
+    test('first test', function(t) {
+        var queue = Queue(db, 'test')
+        t.ok(queue, 'Queue created ok')
+        t.end()
+    });
+
+    test('single round trip', function(t) {
         var queue = Queue(db, 'test')
 
         var msg
@@ -59,4 +56,5 @@ test('single round trip', function(t) {
             }
         )
     })
-});
+
+})
