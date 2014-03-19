@@ -50,7 +50,7 @@ Queue.prototype.add = function(payload, callback) {
         visible  : aDate,
         payload  : payload,
     }
-    self.msgs.insert(msg, function(err, item) {
+    self.msgs.insert(msg, function(err) {
         callback(err)
     })
 }
@@ -92,15 +92,20 @@ Queue.prototype.ack = function(id, ack, callback) {
     var query = {
         id : id,
         ack : ack,
-        // ToDo: check you can't ack an old message which has expired
-        // visible : { $lt : date() },
+        visible : { $gt : date() },
     }
     var update = {
         $set : {
             deleted : true,
         }
     }
-    self.msgs.findAndModify(query, undefined, update, { new : true }, callback)
+    self.msgs.findAndModify(query, undefined, update, { new : true }, function(err, msg, blah) {
+        if (err) return callback(err)
+        if ( !msg ) {
+            return callback(new Error("Unidentified id/ack pair : " + id + '/' + ack))
+        }
+        callback(null, msg)
+    })
 }
 
 module.exports = Queue
