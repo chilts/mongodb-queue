@@ -109,6 +109,11 @@ change it and store it back.
 
 ## Releases ##
 
+### 0.2.1 (2014-03-19) ###
+
+* [FIX] Fix when getting messages off an empty queue
+* [NEW] More Tests
+
 ### 0.2.0 (2014-03-18) ###
 
 * [NEW] messages now return number of tries (times they have been fetched)
