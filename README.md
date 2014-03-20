@@ -135,11 +135,17 @@ change it and store it back.
 
 ## Releases ##
 
-### 0.4.0 (not yet released) ###
+### 0.4.0 (2014-03-20) ###
 
+* [NEW] Ability to ping retrieved messages a. la. 'still alive' and 'extend visibility'
 * [CHANGE] Removed ability to have different queues in the same collection
 * [CHANGE] All queues are now stored in their own collection
+* [CHANGE] When acking a message, only need ack (no longer need id)
+* [TEST] Added test for pinged messages
 * [DOC] Update to specify each queue will create it's own MongoDB collection
+* [DOC] Added docs for option `delay`
+* [DOC] Added synopsis for Queue.ping()
+* [DOC] Removed use of msg.id when calling Queue.ack()
 
 ### 0.3.1 (2014-03-19) ###
 
