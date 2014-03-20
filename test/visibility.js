@@ -20,14 +20,14 @@ setup(function(db) {
                 function(next) {
                     queue.get(function(err, msg) {
                         // wait over 3s so the msg returns to the queue
-                        t.ok(msg._id, 'Got a msg._id (sanity check)')
+                        t.ok(msg.id, 'Got a msg.id (sanity check)')
                         setTimeout(next, 4 * 1000)
                     })
                 },
                 function(next) {
                     queue.get(function(err, msg) {
                         // yes, there should be a message on the queue again
-                        t.ok(msg._id, 'Got a msg._id (sanity check)')
+                        t.ok(msg.id, 'Got a msg.id (sanity check)')
                         queue.ack(msg.ack, function(err) {
                             t.ok(!err, 'No error when acking the message')
                             next()
@@ -66,7 +66,7 @@ setup(function(db) {
                 },
                 function(next) {
                     queue.get(function(err, msg) {
-                        t.ok(msg._id, 'Got a msg._id (sanity check)')
+                        t.ok(msg.id, 'Got a msg.id (sanity check)')
 
                         // remember this original ack
                         originalAck = msg.ack
@@ -87,7 +87,7 @@ setup(function(db) {
                 function(next) {
                     queue.get(function(err, msg) {
                         // the message should now be able to be retrieved, with a new 'ack' id
-                        t.ok(msg._id, 'Got a msg._id (sanity check)')
+                        t.ok(msg.id, 'Got a msg.id (sanity check)')
                         t.notEqual(msg.ack, originalAck, 'Original ack and new ack are different')
 
                         // now ack this new retrieval

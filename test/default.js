@@ -32,8 +32,8 @@ setup(function(db) {
                 function(next) {
                     queue.get(function(err, thisMsg) {
                         msg = thisMsg
-                        t.ok(msg._id, 'Got a msg._id')
-                        t.equal(typeof msg._id, 'string', 'msg._id is a string')
+                        t.ok(msg.id, 'Got a msg.id')
+                        t.equal(typeof msg.id, 'string', 'msg.id is a string')
                         t.ok(msg.ack, 'Got a msg.ack')
                         t.equal(typeof msg.ack, 'string', 'msg.ack is a string')
                         t.ok(msg.tries, 'Got a msg.tries')

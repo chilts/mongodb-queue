@@ -54,7 +54,7 @@ Queue.prototype.add = function(payload, callback) {
     }
     self.col.insert(msg, function(err, results) {
         if (err) return callback(err)
-        callback(null, results[0]._id)
+        callback(null, '' + results[0]._id)
     })
 }
 
@@ -80,8 +80,8 @@ Queue.prototype.get = function(callback) {
         if (err) return callback(err)
         if (!msg) return callback()
         callback(null, {
-            // convert _id to string
-            _id     : '' + msg._id,
+            // convert '_id' to an 'id' string
+            id      : '' + msg._id,
             ack     : msg.ack,
             payload : msg.payload,
             tries   : msg.tries,
