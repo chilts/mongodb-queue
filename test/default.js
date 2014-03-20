@@ -10,13 +10,13 @@ var conStr = 'mongodb://localhost:27017/mongodb-queue'
 setup(function(db) {
 
     test('first test', function(t) {
-        var queue = Queue(db, 'test')
+        var queue = Queue(db, 'default')
         t.ok(queue, 'Queue created ok')
         t.end()
     });
 
     test('single round trip', function(t) {
-        var queue = Queue(db, 'test')
+        var queue = Queue(db, 'default')
 
         var msg
 
