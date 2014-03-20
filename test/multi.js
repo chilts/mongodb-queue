@@ -46,7 +46,7 @@ setup(function(db) {
                 function(next) {
                     var acked = 0
                     msgs.forEach(function(msg) {
-                        queue.ack(msg.id, msg.ack, function(err) {
+                        queue.ack(msg.ack, function(err) {
                             if (err) return t.fail('Failed acking a message')
                             acked++
                             if (acked === total) {

@@ -31,8 +31,8 @@ setup(function(db) {
                     // get something now and it shouldn't be there
                     queue.get(function(err, msg) {
                         t.ok(!err, 'No error when getting a message')
-                        t.ok(msg.id, 'Got a message id now that the message delay has passed')
-                        queue.ack(msg.id, msg.ack, next)
+                        t.ok(msg._id, 'Got a message id now that the message delay has passed')
+                        queue.ack(msg.ack, next)
                     })
                 },
                 function(next) {

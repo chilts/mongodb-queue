@@ -52,17 +52,14 @@ Queue.prototype.add = function(payload, callback) {
     if ( self.delay ) {
         delayDate = datePlus(aDate, self.delay)
     }
-    var thisId = id()
     var msg = {
         queue    : self.queueName,
-        id       : thisId,
-        inserted : aDate,
         visible  : delayDate || aDate,
         payload  : payload,
     }
-    self.msgs.insert(msg, function(err) {
+    self.msgs.insert(msg, function(err, results) {
         if (err) return callback(err)
-        callback(null, thisId)
+        callback(null, results[0]._id)
     })
 }
 
@@ -89,7 +86,8 @@ Queue.prototype.get = function(callback) {
         if (err) return callback(err)
         if (!msg) return callback()
         callback(null, {
-            id      : msg.id,
+            // convert _id to string
+            _id     : '' + msg._id,
             ack     : msg.ack,
             payload : msg.payload,
             tries   : msg.tries,
@@ -97,11 +95,10 @@ Queue.prototype.get = function(callback) {
     })
 }
 
-Queue.prototype.ack = function(id, ack, callback) {
+Queue.prototype.ack = function(ack, callback) {
     var self = this
 
     var query = {
-        id : id,
         ack : ack,
         visible : { $gt : date() },
     }
