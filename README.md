@@ -40,39 +40,39 @@ queue.ack(msg.id, msg.ack, function(err) {
 })
 ```
 
+## Creating a Queue ##
+
+To create a queue, just call `new` (and if you forget to do that, we'll do it for you)
+and pass it the MongoClient, a name and an optional set of options. These are equivalent:
+
+```
+var q1 = new Queue(db, 'a-queue')
+var q2 = Queue(db, 'a-queue')
+```
+
+Note: but don't use the same queue name twice with different options, otherwise things might get confusing.
+
+To pass options, try this:
+
+```
+var imageResizeQueue = Quene(db, 'resize-queue', { visibility : 30, delay : 15 })
+```
+
 ## Options ##
 
-### collectionName ###
-
-Default: `'msgs'`
+### name ###
 
 This is the name of the MongoDB Collection you wish to use to store the messages.
-By default we only use this one MongoDB Collection, unless you specify an
-alternate one.
+Each queue you create will be it's own collection.
 
-e.g. both of these queues use the same `'msgs'` collection by default:
-
-```
-var resizeQueue = Queue(db, 'resize-image')
-var uploadQueue = Queue(db, 'upload-image')
-```
-
-e.g. both of these queue use the MongoDB Collection named `'app'`:
-
-```
-var resizeQueue = Queue(db, 'resize-image', { collectionName : 'app' })
-var uploadQueue = Queue(db, 'upload-image', { collectionName : 'app' })
-```
-
-e.g. these two queue use different MongoDB Collections, `'msgs'` and `'app'` respectively:
+e.g.
 
 ```
 var resizeQueue = Queue(db, 'resize-image')
-var uploadQueue = Queue(db, 'upload-image', { collectionName : 'app' })
+var notifyQueue = Queue(db, 'notify-owner')
 ```
 
-Using the default MongoDB Collection for all of your queues shouldn't cause a problem
-but you may wish to use a different collection per queue if you have a high throughput.
+This will create two collections in MongoDB called `resize-image` and `notify-owner`.
 
 ### Message Visibility Window ###
 
@@ -125,6 +125,12 @@ each message is updated atomically inside MongoDB and we never have to fetch som
 change it and store it back.
 
 ## Releases ##
+
+### 0.4.0 (not yet released) ###
+
+* [CHANGE] Removed ability to have different queues in the same collection
+* [CHANGE] All queues are now stored in their own collection
+* [DOC] Update to specify each queue will create it's own MongoDB collection
 
 ### 0.3.1 (2014-03-19) ###
 
