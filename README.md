@@ -28,14 +28,15 @@ Get a message from the queue:
 queue.get(function(err, msg) {
     console.log('msg.id=' + msg.id)
     console.log('msg.ack=' + msg.ack)
-    // msg.payload is 'Hello, World!'
+    console.log('msg.payload=' + msg.payload) // 'Hello, World!'
+    console.log('msg.tries=' + msg.tries)
 })
 ```
 
 Ack a message (and remove it from the queue):
 
 ```js
-queue.ack(msg.id, msg.ack, function(err) {
+queue.ack(msg.ack, function(err) {
     // msg removed from queue
 })
 ```
