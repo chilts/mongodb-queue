@@ -89,6 +89,27 @@ Queue.prototype.get = function(callback) {
     })
 }
 
+Queue.prototype.ping = function(ack, callback) {
+    var self = this
+
+    var query = {
+        ack : ack,
+        visible : { $gt : date() },
+    }
+    var update = {
+        $set : {
+            visible : (new Date(Date.now() + self.visibility * 1000)).toISOString(),
+        }
+    }
+    self.col.findAndModify(query, undefined, update, { new : true }, function(err, msg, blah) {
+        if (err) return callback(err)
+        if ( !msg ) {
+            return callback(new Error("Queue.ping(): Unidentified ack  : " + ack))
+        }
+        callback()
+    })
+}
+
 Queue.prototype.ack = function(ack, callback) {
     var self = this
 
@@ -104,9 +125,9 @@ Queue.prototype.ack = function(ack, callback) {
     self.col.findAndModify(query, undefined, update, { new : true }, function(err, msg, blah) {
         if (err) return callback(err)
         if ( !msg ) {
-            return callback(new Error("Unidentified id/ack pair : " + id + '/' + ack))
+            return callback(new Error("Queue.ack(): Unidentified ack : " + ack))
         }
-        callback(null, msg)
+        callback()
     })
 }
 

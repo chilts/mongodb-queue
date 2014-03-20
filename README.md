@@ -33,6 +33,14 @@ queue.get(function(err, msg) {
 })
 ```
 
+Ping a message to keep it's visibility open for long-running tasks
+
+```js
+queue.ping(msg.ack, function(err) {
+    // visibility window has now been increased
+})
+```
+
 Ack a message (and remove it from the queue):
 
 ```js
