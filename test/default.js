@@ -1,27 +1,30 @@
-var mongodb = require('mongodb')
 var async = require('async')
 var test = require('tape')
-var Queue = require('../')
 
 var setup = require('./setup.js')
-
-var conStr = 'mongodb://localhost:27017/mongodb-queue'
+var mongoDbQueue = require('../')
 
 setup(function(db) {
 
     test('first test', function(t) {
-        var queue = Queue(db, 'default')
-        t.ok(queue, 'Queue created ok')
-        t.end()
+        mongoDbQueue(db, 'default', function(err, queue) {
+            t.ok(queue, 'Queue created ok')
+            t.end()
+        })
     });
 
     test('single round trip', function(t) {
-        var queue = Queue(db, 'default')
-
+        var queue
         var msg
 
         async.series(
             [
+                function(next) {
+                    mongoDbQueue(db, 'default', function(err, q) {
+                        queue = q
+                        next(err)
+                    })
+                },
                 function(next) {
                     queue.add('Hello, World!', function(err, id) {
                         t.ok(!err, 'There is no error when adding a message.')

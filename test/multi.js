@@ -2,18 +2,24 @@ var async = require('async')
 var test = require('tape')
 
 var setup = require('./setup.js')
-var Queue = require('../')
+var mongoDbQueue = require('../')
 
 var total = 250
 
 setup(function(db) {
 
-    test('add ' + total + ' messages, get ' + total + ' back', function(t) {
-        var queue = new Queue(db, 'multi')
+    test('multi: add ' + total + ' messages, get ' + total + ' back', function(t) {
+        var queue
         var msgs = []
 
         async.series(
             [
+                function(next) {
+                    mongoDbQueue(db, 'multi', function(err, q) {
+                        queue = q
+                        next(err)
+                    })
+                },
                 function(next) {
                     var i, done = 0
                     for(i=0; i<total; i++) {

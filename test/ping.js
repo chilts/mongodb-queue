@@ -2,17 +2,22 @@ var async = require('async')
 var test = require('tape')
 
 var setup = require('./setup.js')
-var Queue = require('../')
+var mongoDbQueue = require('../')
 
 setup(function(db) {
 
     test('ping: check a retrieved message with a ping can still be acked', function(t) {
-        var queue = new Queue(db, 'ping', { visibility : 5 })
-
+        var queue
         var msg
 
         async.series(
             [
+                function(next) {
+                    mongoDbQueue(db, 'ping', { visibility : 5 }, function(err, q) {
+                        queue = q
+                        next(err)
+                    })
+                },
                 function(next) {
                     queue.add('Hello, World!', function(err, id) {
                         t.ok(!err, 'There is no error when adding a message.')
@@ -53,7 +58,6 @@ setup(function(db) {
                 },
             ],
             function(err) {
-                console.log('err:', err)
                 if (err) t.fail(err)
                 t.pass('Finished test ok')
                 t.end()

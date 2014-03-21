@@ -24,12 +24,27 @@ function datePlus(date, s) {
     return (new Date(delayDate)).toISOString()
 }
 
-// the Queue object itself
-function Queue(mongoDbClient, name, opts) {
-    if (!(this instanceof Queue)) {
-        return new Queue(mongoDbClient, name, opts)
+module.exports = function(mongoDbClient, name, opts, callback) {
+    if ( !callback ) {
+        callback = opts
+        opts = {}
     }
 
+    var queue = new Queue(mongoDbClient, name, opts)
+    queue.col.ensureIndex({ visible : 1 }, function(err) {
+        if (err) return callback(err)
+        queue.col.ensureIndex({ ack : 1 }, { unique : true, sparse : true }, function(err) {
+            if (err) return callback(err)
+            callback(null, queue)
+        })
+    })
+}
+
+// the Queue object itself
+function Queue(mongoDbClient, name, opts) {
+    if ( !mongoDbClient ) {
+        throw new Error("mongodb-queue: provide a mongodb.MongoClient")
+    }
     if ( !name ) {
         throw new Error("mongodb-queue: provide a queue name")
     }
@@ -130,5 +145,3 @@ Queue.prototype.ack = function(ack, callback) {
         callback()
     })
 }
-
-module.exports = Queue

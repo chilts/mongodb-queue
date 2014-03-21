@@ -2,15 +2,21 @@ var async = require('async')
 var test = require('tape')
 
 var setup = require('./setup.js')
-var Queue = require('../')
+var mongoDbQueue = require('../')
 
 setup(function(db) {
 
     test('visibility: check message is back in queue after 3s', function(t) {
-        var queue = new Queue(db, 'visibility', { visibility : 3 })
+        var queue
 
         async.series(
             [
+                function(next) {
+                    mongoDbQueue(db, 'visibility', { visibility : 3 }, function(err, q) {
+                        queue = q
+                        next(err)
+                    })
+                },
                 function(next) {
                     queue.add('Hello, World!', function(err) {
                         t.ok(!err, 'There is no error when adding a message.')
@@ -52,12 +58,17 @@ setup(function(db) {
     })
 
     test("visibility: check that a late ack doesn't remove the msg", function(t) {
-        var queue = new Queue(db, 'visibility', { visibility : 3 })
-
+        var queue
         var originalAck
 
         async.series(
             [
+                function(next) {
+                    mongoDbQueue(db, 'visibility', { visibility : 3 }, function(err, q) {
+                        queue = q
+                        next(err)
+                    })
+                },
                 function(next) {
                     queue.add('Hello, World!', function(err) {
                         t.ok(!err, 'There is no error when adding a message.')

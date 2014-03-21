@@ -2,15 +2,21 @@ var async = require('async')
 var test = require('tape')
 
 var setup = require('./setup.js')
-var Queue = require('../')
+var mongoDbQueue = require('../')
 
 setup(function(db) {
 
     test('delay: check messages on this queue are returned after the delay', function(t) {
-        var queue = new Queue(db, 'delay', { delay : 3 })
+        var queue
 
         async.series(
             [
+                function(next) {
+                    mongoDbQueue(db, 'delay', { delay : 3 }, function(err, q) {
+                        queue = q
+                        next(err)
+                    })
+                },
                 function(next) {
                     queue.add('Hello, World!', function(err, id) {
                         t.ok(!err, 'There is no error when adding a message.')
