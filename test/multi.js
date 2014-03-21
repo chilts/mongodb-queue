@@ -9,17 +9,11 @@ var total = 250
 setup(function(db) {
 
     test('multi: add ' + total + ' messages, get ' + total + ' back', function(t) {
-        var queue
+        var queue = mongoDbQueue(db, 'multi')
         var msgs = []
 
         async.series(
             [
-                function(next) {
-                    mongoDbQueue(db, 'multi', function(err, q) {
-                        queue = q
-                        next(err)
-                    })
-                },
                 function(next) {
                     var i, done = 0
                     for(i=0; i<total; i++) {

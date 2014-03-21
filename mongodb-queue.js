@@ -24,20 +24,9 @@ function datePlus(date, s) {
     return (new Date(delayDate)).toISOString()
 }
 
-module.exports = function(mongoDbClient, name, opts, callback) {
-    if ( !callback ) {
-        callback = opts
-        opts = {}
-    }
-
+module.exports = function(mongoDbClient, name, opts) {
     var queue = new Queue(mongoDbClient, name, opts)
-    queue.col.ensureIndex({ visible : 1 }, function(err) {
-        if (err) return callback(err)
-        queue.col.ensureIndex({ ack : 1 }, { unique : true, sparse : true }, function(err) {
-            if (err) return callback(err)
-            callback(null, queue)
-        })
-    })
+    return queue
 }
 
 // the Queue object itself
@@ -54,6 +43,18 @@ function Queue(mongoDbClient, name, opts) {
     this.col = mongoDbClient.collection(name)
     this.visibility = opts.visibility || 30
     this.delay = opts.delay || 0
+}
+
+Queue.prototype.ensureIndexes = function(callback) {
+    var self = this
+
+    self.col.ensureIndex({ visible : 1 }, function(err) {
+        if (err) return callback(err)
+        self.col.ensureIndex({ ack : 1 }, { unique : true, sparse : true }, function(err) {
+            if (err) return callback(err)
+            callback()
+        })
+    })
 }
 
 Queue.prototype.add = function(payload, callback) {

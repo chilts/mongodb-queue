@@ -166,7 +166,9 @@ change it and store it back.
 ### 0.6.0 (not yet released) ###
 
 * [NEW] The msg.id is now returned on successful Queue.ping() and Queue.ack() calls
+* [NEW] Call quueue.ensureIndexes(callback) to create them
 * [CHANGE] When a message is acked, 'deleted' is now set to the current time (not true)
+* [CHANGE] The queue is now created synchronously
 
 ### 0.5.0 (2014-03-21) ###
 
