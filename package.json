@@ -35,8 +35,7 @@
   ],
   "keywords": [
     "mongodb",
-    "queue",
-    ""
+    "queue"
   ],
   "scripts": {
     "test": "set -e; for FILE in test/*.js; do node $FILE; done"
