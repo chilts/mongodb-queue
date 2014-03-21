@@ -16,9 +16,7 @@ var mongoDbQueue = require('mongodb-queue')
 var con = 'mongodb://localhost:27017/test'
 
 mongodb.MongoClient.connect(con, function(err, db) {
-    mongoDbQueue(db, 'my-queue', function(err, queue) {
-        // the 'queue'
-    })
+    var myQueue = mongoDbQueue(db, 'my-queue')
 })
 ```
 
@@ -60,6 +58,17 @@ queue.ack(msg.ack, function(err) {
 })
 ```
 
+And if you haven't already, you should call this to make sure indexes have
+been added in MongoDB. Of course, if you've called this once (in some kind
+one-off script) you don't need to call it in your program. Of course, check
+the changelock to see if you need to update them with new releases:
+
+```js
+queue.ensureIndexes(function(err) {
+    // The indexes needed have been added to MongoDB.
+})
+```
+
 ## Creating a Queue ##
 
 To create a queue, call the exported function with the `MongoClient`, the name
@@ -69,12 +78,10 @@ passed in:
 ```
 var mongoDbQueue = require('mongodb-queue')
 
-mongoDbQueue(db, 'a-queue', function(err, queue) {
-    // a queue
-})
-mongoDbQueue(db, 'a-queue', function(err, queue) {
-    // another queue which uses the same collection as above
-})
+// an instance of a queue
+var queue1 = mongoDbQueue(db, 'a-queue')
+// another queue which uses the same collection as above
+var queue2 = mongoDbQueue(db, 'a-queue')
 ```
 
 Note: but don't use the same queue name twice with different options, otherwise things might get confusing.
@@ -82,9 +89,7 @@ Note: but don't use the same queue name twice with different options, otherwise 
 To pass options, try this:
 
 ```
-mongoDbQueue(db, 'resize-queue', { visibility : 30, delay : 15 }, function(err, resizeQueue) {
-    // the resizeQueue
-})
+var resizeQueue = mongoDbQueue(db, 'resize-queue', { visibility : 30, delay : 15 })
 ```
 
 ## Options ##
@@ -97,12 +102,8 @@ Each queue you create will be it's own collection.
 e.g.
 
 ```
-mongoDbQueue(db, 'resize-queue', function(err, resizeQueue) {
-    // the resizeQueue
-})
-mongoDbQueue(db, 'notify-queue', function(err, notifyQueue) {
-    // the notifyQueue
-})
+var resizeQueue = mongoDbQueue(db, 'resize-queue')
+var notifyQueue = mongoDbQueue(db, 'notify-queue')
 ```
 
 This will create two collections in MongoDB called `resize-image` and `notify-owner`.
@@ -119,9 +120,7 @@ You may set this visibility window on a per queue basis. For example, to set the
 visibility to 15 seconds:
 
 ```
-mongoDbQueue(db, 'queue', { visibility : 15 }, function(err, queue) {
-    // the queue
-})
+var queue = mongoDbQueue(db, 'queue', { visibility : 15 })
 ```
 
 All messages in this queue now have a visibility window of 15s, instead of the
@@ -139,9 +138,7 @@ retrieval 10s after being added.
 To delay all messages by 10 seconds, try this:
 
 ```
-mongoDbQueue(db, 'queue', { delay : 10 }, function(err, queue) {
-    // the queue
-})
+var queue = mongoDbQueue(db, 'queue', { delay : 10 })
 ```
 
 This is now the default for every message added to the queue.
