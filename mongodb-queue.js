@@ -134,7 +134,7 @@ Queue.prototype.ack = function(ack, callback) {
     }
     var update = {
         $set : {
-            deleted : true,
+            deleted : (new Date()).toISOString(),
         }
     }
     self.col.findAndModify(query, undefined, update, { new : true }, function(err, msg, blah) {
