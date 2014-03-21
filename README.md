@@ -160,7 +160,7 @@ change it and store it back.
 
 ## Releases ##
 
-### 0.5.0 (not yet released) ###
+### 0.5.0 (2014-03-21) ###
 
 * [NEW] Now adds two indexes onto the MongoDB collection used for the message
 * [CHANGE] The queue is now created by calling the async exported function
