@@ -121,7 +121,7 @@ Queue.prototype.ping = function(ack, callback) {
         if ( !msg ) {
             return callback(new Error("Queue.ping(): Unidentified ack  : " + ack))
         }
-        callback()
+        callback(null, '' + msg._id)
     })
 }
 
@@ -142,6 +142,6 @@ Queue.prototype.ack = function(ack, callback) {
         if ( !msg ) {
             return callback(new Error("Queue.ack(): Unidentified ack : " + ack))
         }
-        callback()
+        callback(null, '' + msg._id)
     })
 }

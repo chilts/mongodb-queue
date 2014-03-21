@@ -25,8 +25,9 @@ mongodb.MongoClient.connect(con, function(err, db) {
 Add a message to a queue:
 
 ```js
-queue.add('Hello, World!', function(err) {
-   // message with payload 'Hello, World!' added
+queue.add('Hello, World!', function(err, id) {
+    // Message with payload 'Hello, World!' added.
+    // 'id' is returned, useful for logging.
 })
 ```
 
@@ -44,8 +45,9 @@ queue.get(function(err, msg) {
 Ping a message to keep it's visibility open for long-running tasks
 
 ```js
-queue.ping(msg.ack, function(err) {
-    // visibility window has now been increased
+queue.ping(msg.ack, function(err, id) {
+    // Visibility window now increased for this message id.
+    // 'id' is returned, useful for logging.
 })
 ```
 
@@ -53,7 +55,8 @@ Ack a message (and remove it from the queue):
 
 ```js
 queue.ack(msg.ack, function(err) {
-    // msg removed from queue
+    // This msg removed from queue for this message id.
+    // 'id' is returned, useful for logging.
 })
 ```
 
@@ -159,6 +162,10 @@ each message is updated atomically inside MongoDB and we never have to fetch som
 change it and store it back.
 
 ## Releases ##
+
+### 0.6.0 (not yet released) ###
+
+* [NEW] The msg.id is now returned on successful Queue.ping() and Queue.ack() calls
 
 ### 0.5.0 (2014-03-21) ###
 

@@ -47,8 +47,9 @@ setup(function(db) {
                     })
                 },
                 function(next) {
-                    queue.ack(msg.ack, function(err) {
+                    queue.ack(msg.ack, function(err, id) {
                         t.ok(!err, 'No error when acking the message')
+                        t.ok(id, 'Received an id when acking this message')
                         next()
                     })
                 },

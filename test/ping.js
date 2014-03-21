@@ -37,15 +37,17 @@ setup(function(db) {
                 },
                 function(next) {
                     // ping this message so it will be kept alive longer, another 5s
-                    queue.ping(msg.ack, function(err) {
+                    queue.ping(msg.ack, function(err, id) {
                         t.ok(!err, 'No error when pinging a message')
+                        t.ok(id, 'Received an id when acking this message')
                         // now wait 4s
                         setTimeout(next, 4 * 1000)
                     })
                 },
                 function(next) {
-                    queue.ack(msg.ack, function(err) {
+                    queue.ack(msg.ack, function(err, id) {
                         t.ok(!err, 'No error when acking this message')
+                        t.ok(id, 'Received an id when acking this message')
                         next()
                     })
                 },
