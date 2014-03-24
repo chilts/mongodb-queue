@@ -160,7 +160,15 @@ change it and store it back.
 
 ## Releases ##
 
-### 0.6.0 (not yet released) ###
+### 0.7.0 (2014-03-24) ###
+
+* [FIX] Fix .ping() so only visible/non-deleted messages can be pinged
+* [FIX] Fix .ack() so only visible/non-deleted messages can be pinged
+* [TEST] Add test to make sure messages can't be acked twice
+* [TEST] Add test to make sure an acked message can't be pinged
+* [INTERNAL] Slight function name changes, nicer date routines
+
+### 0.6.0 (2014-03-22) ###
 
 * [NEW] The msg.id is now returned on successful Queue.ping() and Queue.ack() calls
 * [NEW] Call quueue.ensureIndexes(callback) to create them
