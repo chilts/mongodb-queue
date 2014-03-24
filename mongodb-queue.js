@@ -26,8 +26,7 @@ function nowPlusSecs(secs) {
 }
 
 module.exports = function(mongoDbClient, name, opts) {
-    var queue = new Queue(mongoDbClient, name, opts)
-    return queue
+    return new Queue(mongoDbClient, name, opts)
 }
 
 // the Queue object itself
