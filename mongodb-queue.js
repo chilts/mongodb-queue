@@ -16,12 +16,13 @@ var crypto = require('crypto')
 function id() {
     return crypto.randomBytes(16).toString('hex')
 }
-function date() {
+
+function now() {
     return (new Date()).toISOString()
 }
-function datePlus(date, s) {
-    var delayDate = (new Date(date)).getTime() + s * 1000
-    return (new Date(delayDate)).toISOString()
+
+function nowPlusSecs(secs) {
+  return (new Date(Date.now() + secs * 1000)).toISOString()
 }
 
 module.exports = function(mongoDbClient, name, opts) {
@@ -59,13 +60,8 @@ Queue.prototype.ensureIndexes = function(callback) {
 
 Queue.prototype.add = function(payload, callback) {
     var self = this
-    var aDate = date()
-    var delayDate
-    if ( self.delay ) {
-        delayDate = datePlus(aDate, self.delay)
-    }
     var msg = {
-        visible  : delayDate || aDate,
+        visible  : self.delay ? nowPlusSecs(self.delay) : now(),
         payload  : payload,
     }
     self.col.insert(msg, function(err, results) {
@@ -78,7 +74,7 @@ Queue.prototype.get = function(callback) {
     var self = this
 
     var query = {
-        visible : { $lt : date() },
+        visible : { $lt : now() },
         deleted : { $exists : false },
     }
     var sort = {
@@ -88,7 +84,7 @@ Queue.prototype.get = function(callback) {
         $inc : { tries : 1 },
         $set : {
             ack     : id(),
-            visible : (new Date(Date.now() + self.visibility * 1000)).toISOString(),
+            visible : nowPlusSecs(self.visibility),
         }
     }
 
@@ -110,12 +106,12 @@ Queue.prototype.ping = function(ack, callback) {
 
     var query = {
         ack     : ack,
-        visible : { $gt : date() },
+        visible : { $gt : now() },
         deleted : { $exists : false },
     }
     var update = {
         $set : {
-            visible : (new Date(Date.now() + self.visibility * 1000)).toISOString(),
+            visible : nowPlusSecs(self.visibility)
         }
     }
     self.col.findAndModify(query, undefined, update, { new : true }, function(err, msg, blah) {
@@ -132,12 +128,12 @@ Queue.prototype.ack = function(ack, callback) {
 
     var query = {
         ack     : ack,
-        visible : { $gt : date() },
+        visible : { $gt : now() },
         deleted : { $exists : false },
     }
     var update = {
         $set : {
-            deleted : (new Date()).toISOString(),
+            deleted : now(),
         }
     }
     self.col.findAndModify(query, undefined, update, { new : true }, function(err, msg, blah) {
