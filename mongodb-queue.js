@@ -109,8 +109,9 @@ Queue.prototype.ping = function(ack, callback) {
     var self = this
 
     var query = {
-        ack : ack,
+        ack     : ack,
         visible : { $gt : date() },
+        deleted : { $exists : false },
     }
     var update = {
         $set : {
