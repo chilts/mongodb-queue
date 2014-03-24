@@ -48,9 +48,14 @@ setup(function(db) {
                 if (err) t.fail(err)
                 t.pass('Finished test ok')
                 t.end()
-                db.close()
             }
         )
+    })
+
+    test('db.close()', function(t) {
+        t.pass('db.close()')
+        db.close()
+        t.end()
     })
 
 })
