@@ -57,10 +57,15 @@ Queue.prototype.ensureIndexes = function(callback) {
     })
 }
 
-Queue.prototype.add = function(payload, callback) {
+Queue.prototype.add = function(payload, opts, callback) {
     var self = this
+    if ( !callback ) {
+        callback = opts
+        opts = {}
+    }
+    var delay = opts.delay || self.delay
     var msg = {
-        visible  : self.delay ? nowPlusSecs(self.delay) : now(),
+        visible  : delay ? nowPlusSecs(delay) : now(),
         payload  : payload,
     }
     self.col.insert(msg, function(err, results) {

@@ -143,6 +143,38 @@ var queue = mongoDbQueue(db, 'queue', { delay : 10 })
 
 This is now the default for every message added to the queue.
 
+## Operations ##
+
+### .add() ###
+
+You can add a string to the queue:
+
+```js
+queue.add('Hello, World!', function(err, id) {
+    // Message with payload 'Hello, World!' added.
+    // 'id' is returned, useful for logging.
+})
+```
+
+Or add an object of your choosing:
+
+```js
+queue.add({ err: 'E_BORKED', msg: 'Broken' }, function(err, id) {
+    // Message with payload { err: 'E_BORKED', msg: 'Broken' } added.
+    // 'id' is returned, useful for logging.
+})
+```
+
+You can delay individual messages from being visible by passing the `delay` option:
+
+```js
+queue.add('Later', { delay: 120 }, function(err, id) {
+    // Message with payload 'Later' added.
+    // 'id' is returned, useful for logging.
+    // This message won't be available for getting for 2 mins.
+})
+```
+
 ## Use of MongoDB ##
 
 Whilst using MongoDB recently and having a need for lightweight queues, I realised
@@ -159,6 +191,11 @@ each message is updated atomically inside MongoDB and we never have to fetch som
 change it and store it back.
 
 ## Releases ##
+
+### 0.8.0 (not yet released) ###
+
+* [NEW] Add 'delay' option to queue.add() so individual messages can be delayed separately
+* [TEST] Test individual 'delay' option for each message
 
 ### 0.7.0 (2014-03-24) ###
 
