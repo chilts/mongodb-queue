@@ -175,6 +175,31 @@ queue.add('Later', { delay: 120 }, function(err, id) {
 })
 ```
 
+### .ack() ###
+
+After you have received an item from a queue and processed it, you can delete it
+by calling `.ack()` with the unique `ackId` returned:
+
+queue.get(function(err, msg) {
+    queue.ack(msg.ack, function(err, id) {
+        // this message has now been removed from the queue
+    })
+})
+```
+
+### .ping() ###
+
+After you have received an item from a queue and you are taking a while
+to process it, you can `.ping()` the message to tell the queue that you are
+still alive and continuing to process the message:
+
+queue.get(function(err, msg) {
+    queue.ping(msg.ack, function(err, id) {
+        // this message has had it's visibility window extended
+    })
+})
+```
+
 ## Use of MongoDB ##
 
 Whilst using MongoDB recently and having a need for lightweight queues, I realised
