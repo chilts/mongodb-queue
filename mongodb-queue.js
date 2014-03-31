@@ -6,7 +6,7 @@
  * - http://chilts.org/
  * - andychilton@gmail.com
  *
- * License: http://chilts.mit-license.org/2013/
+ * License: http://chilts.mit-license.org/2014/
  *
 **/
 
@@ -146,5 +146,56 @@ Queue.prototype.ack = function(ack, callback) {
             return callback(new Error("Queue.ack(): Unidentified ack : " + ack))
         }
         callback(null, '' + msg._id)
+    })
+}
+
+Queue.prototype.total = function(callback) {
+    var self = this
+
+    self.col.count(function(err, count) {
+        if (err) return callback(err)
+        callback(null, count)
+    })
+}
+
+Queue.prototype.size = function(callback) {
+    var self = this
+
+    var query = {
+        visible : { $lt : now() },
+        deleted : { $exists : false },
+    }
+
+    self.col.count(query, function(err, count) {
+        if (err) return callback(err)
+        callback(null, count)
+    })
+}
+
+Queue.prototype.inFlight = function(callback) {
+    var self = this
+
+    var query = {
+        visible : { $gt : now() },
+        ack     : { $exists : true },
+        deleted : { $exists : false },
+    }
+
+    self.col.count(query, function(err, count) {
+        if (err) return callback(err)
+        callback(null, count)
+    })
+}
+
+Queue.prototype.done = function(callback) {
+    var self = this
+
+    var query = {
+        deleted : { $exists : true },
+    }
+
+    self.col.count(query, function(err, count) {
+        if (err) return callback(err)
+        callback(null, count)
     })
 }
