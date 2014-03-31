@@ -180,6 +180,7 @@ queue.add('Later', { delay: 120 }, function(err, id) {
 After you have received an item from a queue and processed it, you can delete it
 by calling `.ack()` with the unique `ackId` returned:
 
+```js
 queue.get(function(err, msg) {
     queue.ack(msg.ack, function(err, id) {
         // this message has now been removed from the queue
@@ -193,12 +194,64 @@ After you have received an item from a queue and you are taking a while
 to process it, you can `.ping()` the message to tell the queue that you are
 still alive and continuing to process the message:
 
+```js
 queue.get(function(err, msg) {
     queue.ping(msg.ack, function(err, id) {
         // this message has had it's visibility window extended
     })
 })
 ```
+
+### .total() ###
+
+Returns the total number of messages that has ever been in the queue, including
+all current messages:
+
+```js
+queue.total(function(err, count) {
+    console.log('This queue has seen %d messages', count)
+})
+```
+
+### .size() ###
+
+Returns the total number of messages that are waiting in the queue.
+
+```js
+queue.size(function(err, count) {
+    console.log('This queue has %d current messages', count)
+})
+```
+
+### .inFlight() ###
+
+Returns the total number of messages that are currently in flight. ie. that
+have been received but not yet acked:
+
+```js
+queue.inFlight(function(err, count) {
+    console.log('A total of %d messages are currently being processed', count)
+})
+```
+
+### .done() ###
+
+Returns the total number of messages that have been processed correctly in the
+queue:
+
+```js
+queue.done(function(err, count) {
+    console.log('This queue has processed %d messages', count)
+})
+```
+
+### Notes about Numbers ###
+
+If you add up `.size() + .inFlight() + .done()` then you should get `.total()`
+but this will only be approximate since these are different operations hitting the database
+at slightly different times. Hence, a message or two might be counted twice or not at all
+depending on message turnover at any one time. You should not rely on these numbers for
+anything but are included as approximations at any point in time.
 
 ## Use of MongoDB ##
 
