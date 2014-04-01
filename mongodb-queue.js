@@ -43,6 +43,11 @@ function Queue(mongoDbClient, name, opts) {
     this.col = mongoDbClient.collection(name)
     this.visibility = opts.visibility || 30
     this.delay = opts.delay || 0
+
+    if ( opts.deadQueue ) {
+        this.deadQueue = opts.deadQueue
+        this.maxRetries = opts.maxRetries || 5
+    }
 }
 
 Queue.prototype.ensureIndexes = function(callback) {
@@ -82,7 +87,7 @@ Queue.prototype.get = function(callback) {
         deleted : { $exists : false },
     }
     var sort = {
-        visible : 1
+        _id : 1
     }
     var update = {
         $inc : { tries : 1 },
@@ -95,13 +100,36 @@ Queue.prototype.get = function(callback) {
     self.col.findAndModify(query, sort, update, { new : true }, function(err, msg) {
         if (err) return callback(err)
         if (!msg) return callback()
-        callback(null, {
+
+        // convert to an external representation
+        msg = {
             // convert '_id' to an 'id' string
             id      : '' + msg._id,
             ack     : msg.ack,
             payload : msg.payload,
             tries   : msg.tries,
-        })
+        }
+
+        // if we have a deadQueue, then check the tries, else don't
+        if ( self.deadQueue ) {
+            // check the tries
+            if ( msg.tries > self.maxRetries ) {
+                // So:
+                // 1) add this message to the deadQueue
+                // 2) ack this message from the regular queue
+                // 3) call ourself to return a new message (if exists)
+                self.deadQueue.add(msg, function(err) {
+                    if (err) return callback(err)
+                    self.ack(msg.ack, function(err) {
+                        if (err) return callback(err)
+                        self.get(callback)
+                    })
+                })
+                return
+            }
+        }
+
+        callback(null, msg)
     })
 }
 

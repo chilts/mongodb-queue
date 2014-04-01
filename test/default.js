@@ -27,6 +27,7 @@ setup(function(db) {
                 },
                 function(next) {
                     queue.get(function(err, thisMsg) {
+                        console.log(thisMsg)
                         msg = thisMsg
                         t.ok(msg.id, 'Got a msg.id')
                         t.equal(typeof msg.id, 'string', 'msg.id is a string')

@@ -7,7 +7,11 @@ module.exports = function(callback) {
         if (err) throw err
         var done = 0
         // let's empty out some collections to make sure there are no messages
-        var collections = ['default', 'delay', 'multi', 'visibility', 'ping', 'stats1', 'stats2']
+        var collections = [
+            'default', 'delay', 'multi', 'visibility', 'ping',
+            'stats1', 'stats2',
+            'queue', 'dead-queue', 'queue-2', 'dead-queue-2'
+        ]
         collections.forEach(function(col) {
             db.collection(col).remove(function() {
                 done += 1

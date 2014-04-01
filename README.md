@@ -108,7 +108,7 @@ var notifyQueue = mongoDbQueue(db, 'notify-queue')
 
 This will create two collections in MongoDB called `resize-image` and `notify-owner`.
 
-### Message Visibility Window ###
+### visibility - Message Visibility Window ###
 
 Default: `30`
 
@@ -126,7 +126,7 @@ var queue = mongoDbQueue(db, 'queue', { visibility : 15 })
 All messages in this queue now have a visibility window of 15s, instead of the
 default 30s.
 
-### Delay Messages on Queue ###
+### delay - Delay Messages on Queue ###
 
 Default: `0`
 
@@ -142,6 +142,71 @@ var queue = mongoDbQueue(db, 'queue', { delay : 10 })
 ```
 
 This is now the default for every message added to the queue.
+
+### deadQueue - Dead Message Queue ###
+
+Default: none
+
+Messages that have been retried over `maxRetries` will be pushed to this queue so you can
+automatically see problem messages.
+
+Pass in a queue (that you created) onto which these messages will be pushed:
+
+```js
+var deadQueue = mongoDbQueue(db, 'dead-queue')
+var queue = mongoDbQueue(db, 'queue', { deadQueue : deadQueue })
+```
+
+If you pop a message off the `queue` over `maxRetries` times and have still not acked it,
+it will be pushed onto the `deadQueue` for you. This happens when you `.get()` (not when
+you miss acking a message in it's visibility window). By doing it when you call `.get()`,
+the unprocessed message will be received, pushed to the `deadQueue`, acked off the normal
+queue and `.get()` will check for new messages prior to returning you one (or none).
+
+### maxRetries - Maximum Retries per Message ###
+
+Default: 5
+
+This option only comes into effect if you pass in a `deadQueue` as shown above. What this
+means is that if an item is popped off the queue `maxRetries` times (e.g. 5) and not acked,
+it will be moved to this `deadQueue` the next time it is tried to pop off. You can poll your
+`deadQueue` for dead messages much like you can poll your regular queues.
+
+The payload of the messages in the dead queue are the entire messages returned when `.get()`ing
+them from the original queue.
+
+e.g.
+
+Given this message:
+
+```
+msg = {
+  id: '533b1eb64ee78a57664cc76c',
+  ack: 'c8a3cc585cbaaacf549d746d7db72f69',
+  payload: 'Hello, World!',
+  tries: 1 }
+}
+```
+
+If it is not acked within the `maxRetries` times, then when you receive this same message
+from the `deadQueue`, it may look like this:
+
+```
+msg = {
+  id: '533b1ecf3ca3a76b667671ef',
+  ack: '73872b204e3f7be84050a1ce82c5c9c0',
+  payload: {
+    id: '533b1eb64ee78a57664cc76c',
+    ack: 'c8a3cc585cbaaacf549d746d7db72f69',
+    payload: 'Hello, World!',
+    tries: 5 }
+  },
+  tries: 1
+}
+```
+
+Notice that the payload from the `deadQueue` is exactly the same as the original message
+when it was on the original queue (except with the number of tries set to 5).
 
 ## Operations ##
 
