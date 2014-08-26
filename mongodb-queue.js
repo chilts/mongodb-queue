@@ -53,7 +53,7 @@ function Queue(mongoDbClient, name, opts) {
 Queue.prototype.ensureIndexes = function(callback) {
     var self = this
 
-    self.col.ensureIndex({ visible : 1 }, function(err) {
+    self.col.ensureIndex({ deleted : 1, visible : 1, _id : 1 }, function(err) {
         if (err) return callback(err)
         self.col.ensureIndex({ ack : 1 }, { unique : true, sparse : true }, function(err) {
             if (err) return callback(err)
