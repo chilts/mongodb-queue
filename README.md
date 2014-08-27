@@ -16,7 +16,7 @@ var mongoDbQueue = require('mongodb-queue')
 var con = 'mongodb://localhost:27017/test'
 
 mongodb.MongoClient.connect(con, function(err, db) {
-    var myQueue = mongoDbQueue(db, 'my-queue')
+    var queue = mongoDbQueue(db, 'my-queue')
 })
 ```
 
