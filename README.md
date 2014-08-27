@@ -320,6 +320,18 @@ queue.done(function(err, count) {
 })
 ```
 
+### .clean() ###
+
+Deletes all processed mesages from the queue. Of course, you can leave these hanging around
+if you wish, but delete them if you no longer need them. Perhaps do this using `setInterval`
+for a regular cleaning:
+
+```js
+queue.clean(function(err) {
+    console.log('The processed messages have been deleted from the queue')
+})
+```
+
 ### Notes about Numbers ###
 
 If you add up `.size() + .inFlight() + .done()` then you should get `.total()`
