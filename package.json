@@ -15,9 +15,9 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "tape": "^2.10.2",
-    "mongodb": "^1.3.23",
-    "async": "^0.2.10"
+    "tape": "^2.14.0",
+    "mongodb": "^1.4.9",
+    "async": "^0.9.0"
   },
   "repository": {
     "type": "git",

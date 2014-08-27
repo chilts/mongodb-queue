@@ -52,9 +52,19 @@ queue.ping(msg.ack, function(err, id) {
 Ack a message (and remove it from the queue):
 
 ```js
-queue.ack(msg.ack, function(err) {
-    // This msg removed from queue for this message id.
-    // 'id' is returned, useful for logging.
+queue.ack(msg.ack, function(err, id) {
+    // This msg removed from queue for this ack.
+    // The 'id' of the message is returned, useful for logging.
+})
+```
+
+By default, all old messages - even processed ones - are left in MongoDB. This is so that
+you can go and analyse them if you want. However, you can call the following function
+to remove processed messages:
+
+```js
+queue.clean(function(err) {
+    // All processed (ie. acked) messages have been deleted
 })
 ```
 
@@ -333,10 +343,17 @@ or deleted. We always use MongoDB's excellent `collection.findAndModify()` so th
 each message is updated atomically inside MongoDB and we never have to fetch something,
 change it and store it back.
 
+## Note on MongoDB Version ##
+
+When using MongoDB v2.6 and the v1.3.23 version of the mongodb driver from npm, I was getting
+a weird error similar to "key $exists must not start with '$'". Yes, very strange. Anyway, the fix
+is to install a later version of the driver. I have tried this with v1.4.9 and it seems ok.
+
 ## Releases ##
 
-### 0.8.0 (not yet released) ###
+### 0.8.0 (2014-08-28) ###
 
+* [NEW] Added .clean() method to remove old (processed) messages
 * [NEW] Add 'delay' option to queue.add() so individual messages can be delayed separately
 * [TEST] Test individual 'delay' option for each message
 

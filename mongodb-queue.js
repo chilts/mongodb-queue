@@ -177,6 +177,16 @@ Queue.prototype.ack = function(ack, callback) {
     })
 }
 
+Queue.prototype.clean = function(callback) {
+    var self = this
+
+    var query = {
+        deleted : { $exists : true },
+    }
+
+    self.col.remove(query, callback)
+}
+
 Queue.prototype.total = function(callback) {
     var self = this
 
