@@ -363,7 +363,12 @@ is to install a later version of the driver. I have tried this with v1.4.9 and i
 
 ## Releases ##
 
-### 0.8.0 (2014-08-28) ###
+### 1.0.0 (as yet unreleased) ###
+
+(Note: The next version will be v1. Pretty much all functionality I wanted in this module
+is now there and hopefully it'll be only bug fixes from now on.)
+
+### 0.9.1 (2014-08-28) ###
 
 * [NEW] Added .clean() method to remove old (processed) messages
 * [NEW] Add 'delay' option to queue.add() so individual messages can be delayed separately
