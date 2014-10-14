@@ -250,6 +250,27 @@ queue.add('Later', { delay: 120 }, function(err, id) {
 })
 ```
 
+### .get() ###
+
+Retrieve a message from the queue:
+
+```js
+queue.get(function(err, msg) {
+    // You can now process the message
+})
+```
+
+Message will have the following structure:
+
+```js
+{
+  id: '533b1eb64ee78a57664cc76c', // ID of the message
+  ack: 'c8a3cc585cbaaacf549d746d7db72f69', // ID for ack and ping operations
+  payload: 'Hello, World!', // Payload passed when the message was addded
+  tries: 1 // Number of times this message has been retrieved from queue without being ack'd
+}
+```
+
 ### .ack() ###
 
 After you have received an item from a queue and processed it, you can delete it
