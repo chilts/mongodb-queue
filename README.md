@@ -260,6 +260,14 @@ queue.get(function(err, msg) {
 })
 ```
 
+You can choose the visibility of an individual retrieved message by passing the `visibility` option:
+
+```js
+queue.get({ visibility: 10 }, function(err, msg) {
+    // You can now process the message for 10s before it goes back into the queue if not ack'd instead of the duration that is set on the queue in general
+})
+```
+
 Message will have the following structure:
 
 ```js
@@ -294,6 +302,16 @@ still alive and continuing to process the message:
 queue.get(function(err, msg) {
     queue.ping(msg.ack, function(err, id) {
         // this message has had it's visibility window extended
+    })
+})
+```
+
+You can also choose the visibility time that gets added by the ping operation by passing the `visibility` option:
+
+```js
+queue.get(function(err, msg) {
+    queue.ping(msg.ack, { visibility: 10 }, function(err, id) {
+        // this message has had it's visibility window extended by 10s instead of the visibilty set on the queue in general
     })
 })
 ```

@@ -79,9 +79,14 @@ Queue.prototype.add = function(payload, opts, callback) {
     })
 }
 
-Queue.prototype.get = function(callback) {
+Queue.prototype.get = function(opts, callback) {
     var self = this
+    if ( !callback ) {
+        callback = opts
+        opts = {}
+    }
 
+    var visibility = opts.visibility || self.visibility
     var query = {
         visible : { $lt : now() },
         deleted : { $exists : false },
@@ -93,7 +98,7 @@ Queue.prototype.get = function(callback) {
         $inc : { tries : 1 },
         $set : {
             ack     : id(),
-            visible : nowPlusSecs(self.visibility),
+            visible : nowPlusSecs(visibility),
         }
     }
 
@@ -133,9 +138,14 @@ Queue.prototype.get = function(callback) {
     })
 }
 
-Queue.prototype.ping = function(ack, callback) {
+Queue.prototype.ping = function(ack, opts, callback) {
     var self = this
+    if ( !callback ) {
+        callback = opts
+        opts = {}
+    }
 
+    var visibility = opts.visibility || self.visibility
     var query = {
         ack     : ack,
         visible : { $gt : now() },
@@ -143,7 +153,7 @@ Queue.prototype.ping = function(ack, callback) {
     }
     var update = {
         $set : {
-            visible : nowPlusSecs(self.visibility)
+            visible : nowPlusSecs(visibility)
         }
     }
     self.col.findAndModify(query, undefined, update, { new : true }, function(err, msg, blah) {

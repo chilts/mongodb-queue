@@ -110,6 +110,61 @@ setup(function(db) {
         )
     })
 
+    test("visibility: check visibility option overrides the queue visibility", function(t) {
+        var queue = mongoDbQueue(db, 'visibility', { visibility : 2 })
+        var originalAck
+
+        async.series(
+            [
+                function(next) {
+                    queue.add('Hello, World!', function(err) {
+                        t.ok(!err, 'There is no error when adding a message.')
+                        next()
+                    })
+                },
+                function(next) {
+                    queue.get({ visibility: 4 }, function(err, msg) {
+                        // wait over 2s so the msg would normally have returns to the queue
+                        t.ok(msg.id, 'Got a msg.id (sanity check)')
+                        setTimeout(next, 3 * 1000)
+                    })
+                },
+                function(next) {
+                    queue.get(function(err, msg) {
+                        // messages should not be back yet
+                        t.ok(!err, 'No error when getting no messages')
+                        t.ok(!msg, 'No msg received')
+                        // wait 2s so the msg should have returns to the queue
+                        setTimeout(next, 2 * 1000)
+                    })
+                },
+                function(next) {
+                    queue.get(function(err, msg) {
+                        // yes, there should be a message on the queue again
+                        t.ok(msg.id, 'Got a msg.id (sanity check)')
+                        queue.ack(msg.ack, function(err) {
+                            t.ok(!err, 'No error when acking the message')
+                            next()
+                        })
+                    })
+                },
+                function(next) {
+                    queue.get(function(err, msg) {
+                        // no more messages
+                        t.ok(!err, 'No error when getting no messages')
+                        t.ok(!msg, 'No msg received')
+                        next()
+                    })
+                }
+            ],
+            function(err) {
+                if (err) t.fail(err)
+                t.pass('Finished test ok')
+                t.end()
+            }
+        )
+    })
+
     test('db.close()', function(t) {
         t.pass('db.close()')
         db.close()
