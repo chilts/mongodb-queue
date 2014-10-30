@@ -250,6 +250,35 @@ queue.add('Later', { delay: 120 }, function(err, id) {
 })
 ```
 
+### .get() ###
+
+Retrieve a message from the queue:
+
+```js
+queue.get(function(err, msg) {
+    // You can now process the message
+})
+```
+
+You can choose the visibility of an individual retrieved message by passing the `visibility` option:
+
+```js
+queue.get({ visibility: 10 }, function(err, msg) {
+    // You can now process the message for 10s before it goes back into the queue if not ack'd instead of the duration that is set on the queue in general
+})
+```
+
+Message will have the following structure:
+
+```js
+{
+  id: '533b1eb64ee78a57664cc76c', // ID of the message
+  ack: 'c8a3cc585cbaaacf549d746d7db72f69', // ID for ack and ping operations
+  payload: 'Hello, World!', // Payload passed when the message was addded
+  tries: 1 // Number of times this message has been retrieved from queue without being ack'd
+}
+```
+
 ### .ack() ###
 
 After you have received an item from a queue and processed it, you can delete it
@@ -273,6 +302,16 @@ still alive and continuing to process the message:
 queue.get(function(err, msg) {
     queue.ping(msg.ack, function(err, id) {
         // this message has had it's visibility window extended
+    })
+})
+```
+
+You can also choose the visibility time that gets added by the ping operation by passing the `visibility` option:
+
+```js
+queue.get(function(err, msg) {
+    queue.ping(msg.ack, { visibility: 10 }, function(err, id) {
+        // this message has had it's visibility window extended by 10s instead of the visibilty set on the queue in general
     })
 })
 ```
