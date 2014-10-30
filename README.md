@@ -402,10 +402,13 @@ is to install a later version of the driver. I have tried this with v1.4.9 and i
 
 ## Releases ##
 
-### 1.0.0 (as yet unreleased) ###
+Yay! We made it to v1.0. This means that development may slow down but to be honest, I have pretty
+much all of the functionality I want in this thing done. Thanks to everyone for feedback, reports
+and pull requests.
 
-(Note: The next version will be v1. Pretty much all functionality I wanted in this module
-is now there and hopefully it'll be only bug fixes from now on.)
+### 1.0.0 (2014-10-30) ###
+
+* [NEW] Ability to specify a visibility window when getting a message (thanks https://github.com/Gertt)
 
 ### 0.9.1 (2014-08-28) ###
 
