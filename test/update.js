@@ -7,7 +7,7 @@ var mongoDbQueue = require('../')
 setup(function(db) {
 
     test('update: update a message and check that we get the updated version when getting same task again from queue', function(t) {
-        var queue = mongoDbQueue(db, 'ping', { visibility : 2 })
+        var queue = mongoDbQueue(db, 'update', { visibility : 2 })
         var msg
 
         async.series(
@@ -20,7 +20,6 @@ setup(function(db) {
                     })
                 },
                 function(next) {
-                    // get something now and it shouldn't be there
                     queue.get(function(err, thisMsg) {
                         msg = thisMsg
                         t.ok(!err, 'No error when getting this message')
