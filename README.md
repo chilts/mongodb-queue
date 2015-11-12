@@ -74,7 +74,7 @@ one-off script) you don't need to call it in your program. Of course, check
 the changelock to see if you need to update them with new releases:
 
 ```js
-queue.ensureIndexes(function(err) {
+queue.createIndexes(function(err, indexName) {
     // The indexes needed have been added to MongoDB.
 })
 ```
