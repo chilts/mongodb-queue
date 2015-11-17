@@ -94,13 +94,19 @@ var queue1 = mongoDbQueue(db, 'a-queue')
 var queue2 = mongoDbQueue(db, 'a-queue')
 ```
 
-Note: but don't use the same queue name twice with different options, otherwise things might get confusing.
+Using `queue1` and `queue2` here won't interfere with each other and will play along nicely, but that's not
+a good idea code-wise - just use the same object. This example is for illustrative purposes only.
 
-To pass options, try this:
+Note: Don't use the same queue name twice with different options, otherwise behaviour is undefined and again
+it's not something you should do.
+
+To pass in options for the queue:
 
 ```
 var resizeQueue = mongoDbQueue(db, 'resize-queue', { visibility : 30, delay : 15 })
 ```
+
+This example shows a queue with a message visibility of 30s and a delay to each message of 15s.
 
 ## Options ##
 
@@ -112,11 +118,11 @@ Each queue you create will be it's own collection.
 e.g.
 
 ```
-var resizeQueue = mongoDbQueue(db, 'resize-queue')
-var notifyQueue = mongoDbQueue(db, 'notify-queue')
+var resizeImageQueue = mongoDbQueue(db, 'resize-image-queue')
+var notifyOwnerQueue = mongoDbQueue(db, 'notify-owner-queue')
 ```
 
-This will create two collections in MongoDB called `resize-image` and `notify-owner`.
+This will create two collections in MongoDB called `resize-image-queue` and `notify-owner-queue`.
 
 ### visibility - Message Visibility Window ###
 
