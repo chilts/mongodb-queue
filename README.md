@@ -412,6 +412,18 @@ Yay! We made it to v1.0. This means that development may slow down but to be hon
 much all of the functionality I want in this thing done. Thanks to everyone for feedback, reports
 and pull requests.
 
+### 2.1.0 (2016-04-21) ###
+
+* [FIX] Fix to indexes (thanks https://github.com/ifightcrime) when lots of messages
+
+### 2.0.0 (2014-11-12) ###
+
+* [NEW] Update MongoDB API from v1 to v2 (thanks https://ithub.com/hanwencheng)
+
+### 1.0.1 (2015-05-25) ###
+
+* [NEW] Test changes only
+
 ### 1.0.0 (2014-10-30) ###
 
 * [NEW] Ability to specify a visibility window when getting a message (thanks https://github.com/Gertt)
