@@ -418,7 +418,7 @@ and pull requests.
 
 ### 2.0.0 (2014-11-12) ###
 
-* [NEW] Update MongoDB API from v1 to v2 (thanks https://ithub.com/hanwencheng)
+* [NEW] Update MongoDB API from v1 to v2 (thanks https://github.com/hanwencheng)
 
 ### 1.0.1 (2015-05-25) ###
 
