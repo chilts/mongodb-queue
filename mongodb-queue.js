@@ -69,12 +69,26 @@ Queue.prototype.add = function(payload, opts, callback) {
         opts = {}
     }
     var delay = opts.delay || self.delay
-    var msg = {
-        visible  : delay ? nowPlusSecs(delay) : now(),
-        payload  : payload,
+    var visible = delay ? nowPlusSecs(delay) : now()
+
+    var msgs = []
+    if (payload instanceof Array) {
+        payload.forEach(function(payload) {
+            msgs.push({
+                visible  : visible,
+                payload  : payload,
+            })
+        })
+    } else {
+        msgs.push({
+            visible  : visible,
+            payload  : payload,
+        })
     }
-    self.col.insertOne(msg, function(err, results) {
+
+    self.col.insertMany(msgs, function(err, results) {
         if (err) return callback(err)
+        if (payload instanceof Array) return callback(null, '' + results.insertedIds)
         callback(null, '' + results.ops[0]._id)
     })
 }
