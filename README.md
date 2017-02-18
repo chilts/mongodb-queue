@@ -246,6 +246,15 @@ queue.add({ err: 'E_BORKED', msg: 'Broken' }, function(err, id) {
 })
 ```
 
+Or add multiple messages:
+
+```js
+queue.add(['msg1', 'msg2', 'msg3'], function(err, ids) {
+    // Messages with payloads 'msg1', 'msg2' & 'msg3' added.
+    // All 'id's are returned as an array, useful for logging.
+})
+```
+
 You can delay individual messages from being visible by passing the `delay` option:
 
 ```js
@@ -263,6 +272,7 @@ Retrieve a message from the queue:
 ```js
 queue.get(function(err, msg) {
     // You can now process the message
+    // IMPORTANT: The callback will not wait for an message if the queue is empty.  The message will be undefined if the queue is empty.
 })
 ```
 
