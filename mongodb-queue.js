@@ -103,7 +103,7 @@ Queue.prototype.get = function(opts, callback) {
     var visibility = opts.visibility || self.visibility
     var query = {
         deleted : null,
-        visible : { $lt : now() },
+        visible : { $lte : now() },
     }
     var sort = {
         _id : 1
@@ -225,7 +225,7 @@ Queue.prototype.size = function(callback) {
 
     var query = {
         deleted : null,
-        visible : { $lt : now() },
+        visible : { $lte : now() },
     }
 
     self.col.count(query, function(err, count) {
