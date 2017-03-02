@@ -64,6 +64,16 @@ setup(function(db) {
         )
     })
 
+    test('many: add no messages, receive err in callback', function(t) {
+        var queue = mongoDbQueue(db, 'many')
+        var messages = []
+        queue.add([], function(err) {
+            if (!err) t.fail('Error was not received')
+            t.pass('Finished test ok')
+            t.end()
+        });
+    })
+
     test('db.close()', function(t) {
         t.pass('db.close()')
         db.close()

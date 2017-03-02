@@ -73,6 +73,10 @@ Queue.prototype.add = function(payload, opts, callback) {
 
     var msgs = []
     if (payload instanceof Array) {
+        if (payload.length === 0) {
+            var errMsg = 'Queue.add(): Array payload length must be greater than 0'
+            return callback(new Error(errMsg))
+        }
         payload.forEach(function(payload) {
             msgs.push({
                 visible  : visible,
