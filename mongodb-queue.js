@@ -42,7 +42,6 @@ function Queue(mongoDbClient, name, opts) {
 
     this.name = name
     this.col = mongoDbClient.collection(name)
-    this.objectId = mongoDbClient.ObjectID
     this.visibility = opts.visibility || 30
     this.delay = opts.delay || 0
 
