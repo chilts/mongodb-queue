@@ -11,6 +11,7 @@
  **/
 
 var crypto = require('crypto')
+var ObjectID = require('mongodb').ObjectID
 
 // some helper functions
 function id() {
@@ -41,6 +42,7 @@ function Queue(mongoDbClient, name, opts) {
 
     this.name = name
     this.col = mongoDbClient.collection(name)
+    this.objectId = mongoDbClient.ObjectID
     this.visibility = opts.visibility || 30
     this.delay = opts.delay || 0
 
@@ -263,5 +265,27 @@ Queue.prototype.done = function(callback) {
     self.col.count(query, function(err, count) {
         if (err) return callback(err)
         callback(null, count)
+    })
+}
+
+Queue.prototype.cancel = function(id, callback) {
+    var self = this
+
+    var query = {
+        _id     : new ObjectID(id),
+        deleted : null,
+        visible : { $lte : now() },
+    }
+    var update = {
+        $set : {
+            deleted : now(),
+        }
+    }
+    self.col.findOneAndUpdate(query, update, { returnOriginal : false }, function(err, msg, blah) {
+        if (err) return callback(err)
+        if ( !msg.value ) {
+          return callback(new Error("Queue.cancel(): Unidentified id : " + id))
+        }
+        callback(null)
     })
 }

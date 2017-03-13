@@ -58,6 +58,14 @@ queue.ack(msg.ack, function(err, id) {
 })
 ```
 
+Remove a non visible message from the queue:
+
+```js
+queue.cancel(id, function(err) {
+    // err if in flight, already acked, or invalid id
+})
+```
+
 By default, all old messages - even processed ones - are left in MongoDB. This is so that
 you can go and analyse them if you want. However, you can call the following function
 to remove processed messages:
