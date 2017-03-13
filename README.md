@@ -49,6 +49,14 @@ queue.ping(msg.ack, function(err, id) {
 })
 ```
 
+If your queued tasks acts like state machines you might want to update state of your payload as you process the task. This ensures that you can continue processing where you left should something bad happen to your node process.
+
+```js
+queue.update(msg.ack, newPayload, function(err) {
+    // Payload for msg.ack is now updated
+})
+```
+
 Ack a message (and remove it from the queue):
 
 ```js

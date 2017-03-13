@@ -97,6 +97,22 @@ Queue.prototype.add = function(payload, opts, callback) {
     })
 }
 
+Queue.prototype.update = function(ack, payload, callback) {
+    var self = this
+    var query = {
+        ack     : ack
+    }
+    var update = {
+        $set : {
+            payload: payload
+        }
+    }
+    self.col.update(query, update, function(err) {
+        if (err) return callback(err)
+        callback(null)
+    })
+}
+
 Queue.prototype.get = function(opts, callback) {
     var self = this
     if ( !callback ) {
