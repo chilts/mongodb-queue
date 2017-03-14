@@ -7,11 +7,10 @@
     "test": "set -e; for FILE in test/*.js; do node $FILE; done"
   },
   "dependencies": {
-    "mongodb": "^2.2.24"
+    "mongodb": "^2.0.48"
   },
   "devDependencies": {
     "tape": "^4.2.2",
-    "mongodb": "^2.0.48",
     "async": "^1.5.0"
   },
   "homepage": "https://github.com/chilts/mongodb-queue",
