@@ -6,7 +6,9 @@
   "scripts": {
     "test": "set -e; for FILE in test/*.js; do node $FILE; done"
   },
-  "dependencies": {},
+  "dependencies": {
+    "mongodb": "^2.2.24"
+  },
   "devDependencies": {
     "tape": "^4.2.2",
     "mongodb": "^2.0.48",
