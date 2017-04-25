@@ -1,14 +1,12 @@
 {
   "name": "mongodb-queue",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "description": "Message queues which uses MongoDB.",
   "main": "mongodb-queue.js",
   "scripts": {
     "test": "set -e; for FILE in test/*.js; do node $FILE; done"
   },
-  "dependencies": {
-    "mongodb": "^2.0.48"
-  },
+  "dependencies": {},
   "devDependencies": {
     "tape": "^4.2.2",
     "async": "^1.5.0"
