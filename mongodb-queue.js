@@ -62,6 +62,27 @@ Queue.prototype.createIndexes = function(callback) {
     })
 }
 
+Queue.prototype.addIfMissing = function(id, payload, opts, callback) {
+  var self = this
+  if ( !callback ) {
+    callback = opts
+    opts = {}
+  }
+  var delay = opts.delay || self.delay
+  var visible = delay ? nowPlusSecs(delay) : now()
+
+  var msg = {
+    _id : id,
+    visible  : visible,
+    payload  : payload,
+  }
+
+  self.col.updateOne({_id: id}, { $setOnInsert: msg}, { upsert: true }, function(err) {
+    if (err) return callback(err)
+    callback(null, id)
+  })
+}
+
 Queue.prototype.add = function(payload, opts, callback) {
     var self = this
     if ( !callback ) {
