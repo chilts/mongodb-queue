@@ -136,7 +136,7 @@ Queue.prototype.get = function(opts, callback) {
         visible : { $lte : now() },
     }
     var sort = {
-        id : 1
+        _id : 1
     }
     var update = {
         $inc : { tries : 1 },
