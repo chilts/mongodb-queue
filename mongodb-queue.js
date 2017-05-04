@@ -55,7 +55,7 @@ Queue.prototype.createIndexes = function(callback) {
 
     self.col.createIndex({ deleted : 1, visible : 1 }, function(err, indexname) {
         if (err) return callback(err)
-        self.col.createIndex({ ack : 1 }, { unique : true, sparse : true }, function(err) {
+        self.col.createIndex({ ack : 1, id: 1 }, { unique : true, sparse : true }, function(err) {
             if (err) return callback(err)
             callback(null, indexname)
         })
