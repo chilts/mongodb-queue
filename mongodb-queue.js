@@ -72,12 +72,12 @@ Queue.prototype.addIfMissing = function(id, payload, opts, callback) {
   var visible = delay ? nowPlusSecs(delay) : now()
 
   var msg = {
-    _id : id,
+    id : id,
     visible  : visible,
     payload  : payload,
   }
 
-  self.col.updateOne({_id: id}, { $setOnInsert: msg }, { upsert: true }, function(err, result) {
+  self.col.updateOne({ id : id }, { $setOnInsert: msg }, { upsert: true }, function(err, result) {
     if (err) return callback(err)
     callback(null, result.nUpserted === 1 ? id : null)
   })
@@ -102,19 +102,24 @@ Queue.prototype.add = function(payload, opts, callback) {
             msgs.push({
                 visible  : visible,
                 payload  : payload,
+                id : id()
             })
         })
     } else {
         msgs.push({
             visible  : visible,
             payload  : payload,
+            id :  id()
         })
     }
 
     self.col.insertMany(msgs, function(err, results) {
         if (err) return callback(err)
-        if (payload instanceof Array) return callback(null, results.insertedIds)
-        callback(null, results.ops[0]._id)
+        if (payload instanceof Array) {
+            var ids = results.ops.map(function(result){ return result.id })
+            return callback(null, ids)
+        }
+        callback(null, results.ops[0].id)
     })
 }
 
@@ -131,7 +136,7 @@ Queue.prototype.get = function(opts, callback) {
         visible : { $lte : now() },
     }
     var sort = {
-        _id : 1
+        id : 1
     }
     var update = {
         $inc : { tries : 1 },
@@ -148,7 +153,7 @@ Queue.prototype.get = function(opts, callback) {
 
         // convert to an external representation
         msg = {
-            id      : msg._id,
+            id      : msg.id,
             ack     : msg.ack,
             payload : msg.payload,
             tries   : msg.tries,
@@ -199,7 +204,7 @@ Queue.prototype.ping = function(ack, opts, callback) {
         if ( !msg.value ) {
             return callback(new Error("Queue.ping(): Unidentified ack  : " + ack))
         }
-        callback(null, msg.value._id)
+        callback(null, msg.value.id)
     })
 }
 
@@ -221,7 +226,7 @@ Queue.prototype.ack = function(ack, callback) {
         if ( !msg.value ) {
             return callback(new Error("Queue.ack(): Unidentified ack : " + ack))
         }
-        callback(null, msg.value._id)
+        callback(null, msg.value.id)
     })
 }
 
@@ -290,7 +295,7 @@ Queue.prototype.cancel = function(id, callback) {
     var self = this
 
     var query = {
-        _id     : id,
+        id     : id,
         deleted : null,
         visible : { $lte : now() },
     }

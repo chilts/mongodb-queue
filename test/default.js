@@ -30,7 +30,7 @@ setup(function(db) {
                         console.log(thisMsg)
                         msg = thisMsg
                         t.ok(msg.id, 'Got a msg.id')
-                        t.equal(typeof msg.id, 'object', 'msg.id is a string')
+                        t.equal(typeof msg.id, 'string', 'msg.id is a string')
                         t.ok(msg.ack, 'Got a msg.ack')
                         t.equal(typeof msg.ack, 'string', 'msg.ack is a string')
                         t.ok(msg.tries, 'Got a msg.tries')
@@ -72,7 +72,7 @@ setup(function(db) {
                     queue.get(function(err, thisMsg) {
                         msg = thisMsg
                         t.ok(msg.id, 'Got a msg.id')
-                        t.equal(typeof msg.id, 'object', 'msg.id is a string')
+                        t.equal(typeof msg.id, 'string', 'msg.id is a string')
                         t.ok(msg.ack, 'Got a msg.ack')
                         t.equal(typeof msg.ack, 'string', 'msg.ack is a string')
                         t.ok(msg.tries, 'Got a msg.tries')
