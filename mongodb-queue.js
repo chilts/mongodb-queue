@@ -79,7 +79,7 @@ Queue.prototype.addIfMissing = function(id, payload, opts, callback) {
 
   self.col.updateOne({ id : id }, { $setOnInsert: msg }, { upsert: true }, function(err, result) {
     if (err) return callback(err)
-    callback(null, result.nUpserted === 1 ? id : null)
+    callback(null, result.upsertedCount === 1 ? id : null)
   })
 }
 
