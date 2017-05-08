@@ -20,8 +20,9 @@ setup(function(db) {
             })
           },
           function(next) {
-            queue.addIfMissing(1, {abc:123}, {}, function(err) {
+            queue.addIfMissing(1, {abc:123}, {}, function(err, id) {
               t.ok(!err, 'There is no error.')
+              t.equal(id, 1, 'The id returned mathces what was specified')
               next()
             })
           },
@@ -40,8 +41,9 @@ setup(function(db) {
             })
           },
           function(next) {
-            queue.addIfMissing(1, {abc:123}, {}, function(err) {
+            queue.addIfMissing(1, {abc:123}, {}, function(err, id) {
               t.ok(!err, 'There is no error.')
+              t.ok(!id, 'No id is returned.');
               next()
             })
           },
@@ -60,8 +62,9 @@ setup(function(db) {
             })
           },
           function(next) {
-            queue.addIfMissing(1, {abc:456}, {}, function(err) {
+            queue.addIfMissing(1, {abc:456}, {}, function(err, id) {
               t.ok(!err, 'There is no error.')
+              t.ok(!id, 'No id is returned.');
               next()
             })
           },
@@ -108,8 +111,9 @@ setup(function(db) {
             })
           },
           function(next) {
-            queue.addIfMissing(1, {abc:123}, {}, function(err) {
+            queue.addIfMissing(1, {abc:123}, {}, function(err, id) {
               t.ok(!err, 'There is no error.')
+              t.ok(!id, 'No id is returned.');
               next()
             })
           },
@@ -134,6 +138,13 @@ setup(function(db) {
               next()
             })
           },
+          function(next) {
+            queue.addIfMissing('abc456', {}, {}, function(err, id){
+              t.ok(!err, 'There is no error.')
+              t.equal(id, 'abc456', 'The id matches what was specified')
+              next()
+            })
+          }
         ],
         function(err) {
           if (err) t.fail(err)
