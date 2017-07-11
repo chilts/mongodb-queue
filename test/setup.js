@@ -9,7 +9,7 @@ module.exports = function(callback) {
         // let's empty out some collections to make sure there are no messages
         var collections = [
             'default', 'delay', 'multi', 'visibility', 'clean', 'ping',
-            'stats1', 'stats2',
+            'stats1', 'stats2', 'indexes', 'ttl',
             'queue', 'dead-queue', 'queue-2', 'dead-queue-2'
         ]
         collections.forEach(function(col) {

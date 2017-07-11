@@ -21,6 +21,10 @@ function now() {
     return (new Date()).toISOString()
 }
 
+function nowAsDate() {
+    return new Date()
+}
+
 function nowPlusSecs(secs) {
     return (new Date(Date.now() + secs * 1000)).toISOString()
 }
@@ -43,6 +47,7 @@ function Queue(mongoDbClient, name, opts) {
     this.col = mongoDbClient.collection(name)
     this.visibility = opts.visibility || 30
     this.delay = opts.delay || 0
+    this.ttl = opts.ttl || null
 
     if ( opts.deadQueue ) {
         this.deadQueue = opts.deadQueue
@@ -57,7 +62,13 @@ Queue.prototype.createIndexes = function(callback) {
         if (err) return callback(err)
         self.col.createIndex({ ack : 1 }, { unique : true, sparse : true }, function(err) {
             if (err) return callback(err)
-            callback(null, indexname)
+            if (!self.ttl) {
+                return callback(null, indexname)
+            }
+            self.col.createIndex({ deleted : 1}, { expireAfterSeconds: self.ttl, background: true}, function(err) {
+                if (err) return callback(err)
+                callback(null, indexname)
+            });
         })
     })
 }
@@ -193,7 +204,7 @@ Queue.prototype.ack = function(ack, callback) {
     }
     var update = {
         $set : {
-            deleted : now(),
+            deleted : nowAsDate(),
         }
     }
     self.col.findOneAndUpdate(query, update, { returnOriginal : false }, function(err, msg, blah) {
