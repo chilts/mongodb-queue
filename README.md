@@ -200,7 +200,7 @@ msg = {
   id: '533b1eb64ee78a57664cc76c',
   ack: 'c8a3cc585cbaaacf549d746d7db72f69',
   payload: 'Hello, World!',
-  tries: 1 }
+  tries: 1
 }
 ```
 
@@ -215,7 +215,7 @@ msg = {
     id: '533b1eb64ee78a57664cc76c',
     ack: 'c8a3cc585cbaaacf549d746d7db72f69',
     payload: 'Hello, World!',
-    tries: 5 }
+    tries: 5
   },
   tries: 1
 }
