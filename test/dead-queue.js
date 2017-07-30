@@ -79,7 +79,7 @@ setup(function(db) {
                     deadQueue.get(function(err, msg) {
                         t.ok(!err, 'No error when getting from the deadQueue')
                         t.ok(msg.id, 'Got a message id from the deadQueue')
-                        t.equal(msg.payload.id, origId, 'Got the same message id as the original message')
+                        t.equal(msg.payload.id.toString(), origId.toString(), 'Got the same message id as the original message')
                         t.equal(msg.payload.payload, 'Hello, World!', 'Got the same as the original message')
                         t.equal(msg.payload.tries, 6, 'Got the tries as 6')
                         next()
@@ -119,7 +119,7 @@ setup(function(db) {
                 },
                 function(next) {
                     queue.get(function(err, thisMsg) {
-                        t.equal(thisMsg.id, origId, 'We return the first message on first go')
+                        t.equal(thisMsg.id.toString(), origId.toString(), 'We return the first message on first go')
                         setTimeout(function() {
                             t.pass('First expiration')
                             next()
@@ -128,7 +128,7 @@ setup(function(db) {
                 },
                 function(next) {
                     queue.get(function(err, thisMsg) {
-                        t.equal(thisMsg.id, origId, 'We return the first message on second go')
+                        t.equal(thisMsg.id.toString(), origId.toString(), 'We return the first message on second go')
                         setTimeout(function() {
                             t.pass('Second expiration')
                             next()
@@ -137,7 +137,7 @@ setup(function(db) {
                 },
                 function(next) {
                     queue.get(function(err, thisMsg) {
-                        t.equal(thisMsg.id, origId, 'We return the first message on third go')
+                        t.equal(thisMsg.id.toString(), origId.toString(), 'We return the first message on third go')
                         setTimeout(function() {
                             t.pass('Third expiration')
                             next()
@@ -149,7 +149,7 @@ setup(function(db) {
                     // pior to it being returned.
                     queue.get(function(err, msg) {
                         t.ok(!err, 'No error when getting the 2nd message')
-                        t.equal(msg.id, origId2, 'Got the ID of the 2nd message')
+                        t.equal(msg.id.toString(), origId2.toString(), 'Got the ID of the 2nd message')
                         t.equal(msg.payload, 'Part II', 'Got the same payload as the 2nd message')
                         next()
                     })
@@ -158,7 +158,7 @@ setup(function(db) {
                     deadQueue.get(function(err, msg) {
                         t.ok(!err, 'No error when getting from the deadQueue')
                         t.ok(msg.id, 'Got a message id from the deadQueue')
-                        t.equal(msg.payload.id, origId, 'Got the same message id as the original message')
+                        t.equal(msg.payload.id.toString(), origId.toString(), 'Got the same message id as the original message')
                         t.equal(msg.payload.payload, 'Hello, World!', 'Got the same as the original message')
                         t.equal(msg.payload.tries, 4, 'Got the tries as 4')
                         next()

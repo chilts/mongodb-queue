@@ -58,6 +58,14 @@ queue.ack(msg.ack, function(err, id) {
 })
 ```
 
+Remove a non visible message from the queue:
+
+```js
+queue.cancel(id, function(err) {
+    // err if in flight, already acked, or invalid id
+})
+```
+
 By default, all old messages - even processed ones - are left in MongoDB. This is so that
 you can go and analyse them if you want. However, you can call the following function
 to remove processed messages:
@@ -262,6 +270,24 @@ queue.add('Later', { delay: 120 }, function(err, id) {
     // Message with payload 'Later' added.
     // 'id' is returned, useful for logging.
     // This message won't be available for getting for 2 mins.
+})
+```
+### .addIfMissing() ###
+
+The same as add but allows you to specify the id. If a message with that id has already been added to the queue,
+this request is ignored.
+
+```js
+queue.addIfMissing(1,'Hello, World!', function(err, id) {
+    // Message with payload 'Hello, World!' added.
+    // 'id' is returned if a new message was inserted, null if it already existed
+})
+```
+The id can be of any type. It will be returned to you in the same form you provide to use in methods requiring the id.
+```js
+queue.addIfMissing('abc123','Hello, World!', function(err, id) {
+    // Message with payload 'Hello, World!' added.
+    // 'id' is returned if a new message was inserted, null if it already existed
 })
 ```
 
