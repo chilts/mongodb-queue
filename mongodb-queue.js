@@ -92,8 +92,8 @@ Queue.prototype.add = function(payload, opts, callback) {
 
     self.col.insertMany(msgs, function(err, results) {
         if (err) return callback(err)
-        if (payload instanceof Array) return callback(null, '' + results.insertedIds)
-        callback(null, '' + results.ops[0]._id)
+        if (payload instanceof Array) return callback(null, results.insertedIds)
+        callback(null, results.ops[0]._id)
     })
 }
 
@@ -127,8 +127,7 @@ Queue.prototype.get = function(opts, callback) {
 
         // convert to an external representation
         msg = {
-            // convert '_id' to an 'id' string
-            id      : '' + msg._id,
+            id      : msg._id,
             ack     : msg.ack,
             payload : msg.payload,
             tries   : msg.tries,
@@ -174,12 +173,12 @@ Queue.prototype.ping = function(ack, opts, callback) {
             visible : nowPlusSecs(visibility)
         }
     }
-    self.col.findOneAndUpdate(query, update, { returnOriginal : false }, function(err, msg, blah) {
+    self.col.findOneAndUpdate(query, update, { returnOriginal : false }, function(err, msg) {
         if (err) return callback(err)
         if ( !msg.value ) {
             return callback(new Error("Queue.ping(): Unidentified ack  : " + ack))
         }
-        callback(null, '' + msg.value._id)
+        callback(null, msg.value._id)
     })
 }
 
@@ -196,12 +195,12 @@ Queue.prototype.ack = function(ack, callback) {
             deleted : now(),
         }
     }
-    self.col.findOneAndUpdate(query, update, { returnOriginal : false }, function(err, msg, blah) {
+    self.col.findOneAndUpdate(query, update, { returnOriginal : false }, function(err, msg) {
         if (err) return callback(err)
         if ( !msg.value ) {
             return callback(new Error("Queue.ack(): Unidentified ack : " + ack))
         }
-        callback(null, '' + msg.value._id)
+        callback(null, msg.value._id)
     })
 }
 
@@ -263,5 +262,27 @@ Queue.prototype.done = function(callback) {
     self.col.count(query, function(err, count) {
         if (err) return callback(err)
         callback(null, count)
+    })
+}
+
+Queue.prototype.cancel = function(id, callback) {
+    var self = this
+
+    var query = {
+        _id     : id,
+        deleted : null,
+        visible : { $lte : now() },
+    }
+    var update = {
+        $set : {
+            deleted : now(),
+        }
+    }
+    self.col.findOneAndUpdate(query, update, { returnOriginal : false }, function(err, msg) {
+        if (err) return callback(err)
+        if ( !msg.value ) {
+          return callback(new Error("Queue.cancel(): Unidentified id : " + id))
+        }
+        callback(null)
     })
 }
