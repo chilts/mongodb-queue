@@ -265,3 +265,19 @@ Queue.prototype.done = function(callback) {
         callback(null, count)
     })
 }
+
+Queue.prototype.kill = function(msg, callback) {
+    var self = this
+    if ( self.deadQueue ) {
+        // 1) add this message to the deadQueue
+        // 2) ack this message from the regular queue
+        self.deadQueue.add(msg, function(err) {
+            if (err) return callback(err)
+            self.ack(msg.ack, function(err) {
+                if (err) return callback(err)
+            })
+        })
+    }
+
+    return callback(null, msg)
+}
