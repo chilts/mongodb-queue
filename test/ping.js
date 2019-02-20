@@ -4,7 +4,7 @@ var test = require('tape')
 var setup = require('./setup.js')
 var mongoDbQueue = require('../')
 
-setup(function(db) {
+setup(function(client, db) {
 
     test('ping: check a retrieved message with a ping can still be acked', function(t) {
         var queue = mongoDbQueue(db, 'ping', { visibility : 5 })
@@ -174,9 +174,9 @@ test("ping: check visibility option overrides the queue visibility", function(t)
         )
     })
 
-    test('db.close()', function(t) {
-        t.pass('db.close()')
-        db.close()
+    test('client.close()', function(t) {
+        t.pass('client.close()')
+        client.close()
         t.end()
     })
 

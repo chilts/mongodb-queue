@@ -4,7 +4,7 @@ var test = require('tape')
 var setup = require('./setup.js')
 var mongoDbQueue = require('../')
 
-setup(function(db) {
+setup(function(client, db) {
 
     test('visibility: check message is back in queue after 3s', function(t) {
         t.plan(2)
@@ -18,9 +18,9 @@ setup(function(db) {
         })
     })
 
-    test('db.close()', function(t) {
-        t.pass('db.close()')
-        db.close()
+    test('client.close()', function(t) {
+        t.pass('client.close()')
+        client.close()
         t.end()
     })
 

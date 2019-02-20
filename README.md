@@ -5,6 +5,14 @@
 A really light-weight way to create queues with a nice API if you're already
 using MongoDB.
 
+Now compatible with the MongoDB v3 driver.
+
+For MongoDB v2 driver use mongodb-queue@3.
+
+**NOTE**: This package is considered feature complete and **STABLE** hence there is not a whole lot of development on
+it though it is being used extensively. Use it with all your might and let us know of any problems - it should be
+bullet-proof.
+
 ## Synopsis ##
 
 Create a connection to your MongoDB database, and use it to create a queue object:
@@ -13,17 +21,22 @@ Create a connection to your MongoDB database, and use it to create a queue objec
 var mongodb = require('mongodb')
 var mongoDbQueue = require('mongodb-queue')
 
-var con = 'mongodb://localhost:27017/test'
+const url = 'mongodb://localhost:27017/'
+const client = new mongodb.MongoClient(url, { useNewUrlParser: true })
 
-mongodb.MongoClient.connect(con, function(err, db) {
-    var queue = mongoDbQueue(db, 'my-queue')
+client.connect(err => {
+  const db = client.db('test')
+  const queue = mongoDbQueue(db, 'my-queue')
+
+  // ...
+
 })
 ```
 
 Add a message to a queue:
 
 ```js
-queue.add('Hello, World!', function(err, id) {
+queue.add('Hello, World!', (err, id) => {
     // Message with payload 'Hello, World!' added.
     // 'id' is returned, useful for logging.
 })
@@ -32,7 +45,7 @@ queue.add('Hello, World!', function(err, id) {
 Get a message from the queue:
 
 ```js
-queue.get(function(err, msg) {
+queue.get((err, msg) => {
     console.log('msg.id=' + msg.id)
     console.log('msg.ack=' + msg.ack)
     console.log('msg.payload=' + msg.payload) // 'Hello, World!'
@@ -43,7 +56,7 @@ queue.get(function(err, msg) {
 Ping a message to keep it's visibility open for long-running tasks
 
 ```js
-queue.ping(msg.ack, function(err, id) {
+queue.ping(msg.ack, (err, id) => {
     // Visibility window now increased for this message id.
     // 'id' is returned, useful for logging.
 })
@@ -52,7 +65,7 @@ queue.ping(msg.ack, function(err, id) {
 Ack a message (and remove it from the queue):
 
 ```js
-queue.ack(msg.ack, function(err, id) {
+queue.ack(msg.ack, (err, id) => {
     // This msg removed from queue for this ack.
     // The 'id' of the message is returned, useful for logging.
 })
@@ -63,7 +76,7 @@ you can go and analyse them if you want. However, you can call the following fun
 to remove processed messages:
 
 ```js
-queue.clean(function(err) {
+queue.clean((err) => {
     // All processed (ie. acked) messages have been deleted
 })
 ```
@@ -74,7 +87,7 @@ one-off script) you don't need to call it in your program. Of course, check
 the changelock to see if you need to update them with new releases:
 
 ```js
-queue.createIndexes(function(err, indexName) {
+queue.createIndexes((err, indexName) => {
     // The indexes needed have been added to MongoDB.
 })
 ```
@@ -173,7 +186,7 @@ var deadQueue = mongoDbQueue(db, 'dead-queue')
 var queue = mongoDbQueue(db, 'queue', { deadQueue : deadQueue })
 ```
 
-If you pop a message off the `queue` over `maxRetries` times and have still not acked it,
+If you pop a message off the `queue` over `maxRetries` times and still have not acked it,
 it will be pushed onto the `deadQueue` for you. This happens when you `.get()` (not when
 you miss acking a message in it's visibility window). By doing it when you call `.get()`,
 the unprocessed message will be received, pushed to the `deadQueue`, acked off the normal
@@ -231,7 +244,7 @@ when it was on the original queue (except with the number of tries set to 5).
 You can add a string to the queue:
 
 ```js
-queue.add('Hello, World!', function(err, id) {
+queue.add('Hello, World!', (err, id) => {
     // Message with payload 'Hello, World!' added.
     // 'id' is returned, useful for logging.
 })
@@ -240,7 +253,7 @@ queue.add('Hello, World!', function(err, id) {
 Or add an object of your choosing:
 
 ```js
-queue.add({ err: 'E_BORKED', msg: 'Broken' }, function(err, id) {
+queue.add({ err: 'E_BORKED', msg: 'Broken' }, (err, id) => {
     // Message with payload { err: 'E_BORKED', msg: 'Broken' } added.
     // 'id' is returned, useful for logging.
 })
@@ -249,7 +262,7 @@ queue.add({ err: 'E_BORKED', msg: 'Broken' }, function(err, id) {
 Or add multiple messages:
 
 ```js
-queue.add(['msg1', 'msg2', 'msg3'], function(err, ids) {
+queue.add(['msg1', 'msg2', 'msg3'], (err, ids) => {
     // Messages with payloads 'msg1', 'msg2' & 'msg3' added.
     // All 'id's are returned as an array, useful for logging.
 })
@@ -258,7 +271,7 @@ queue.add(['msg1', 'msg2', 'msg3'], function(err, ids) {
 You can delay individual messages from being visible by passing the `delay` option:
 
 ```js
-queue.add('Later', { delay: 120 }, function(err, id) {
+queue.add('Later', { delay: 120 }, (err, id) => {
     // Message with payload 'Later' added.
     // 'id' is returned, useful for logging.
     // This message won't be available for getting for 2 mins.
@@ -270,7 +283,7 @@ queue.add('Later', { delay: 120 }, function(err, id) {
 Retrieve a message from the queue:
 
 ```js
-queue.get(function(err, msg) {
+queue.get((err, msg) => {
     // You can now process the message
     // IMPORTANT: The callback will not wait for an message if the queue is empty.  The message will be undefined if the queue is empty.
 })
@@ -279,7 +292,7 @@ queue.get(function(err, msg) {
 You can choose the visibility of an individual retrieved message by passing the `visibility` option:
 
 ```js
-queue.get({ visibility: 10 }, function(err, msg) {
+queue.get({ visibility: 10 }, (err, msg) => {
     // You can now process the message for 10s before it goes back into the queue if not ack'd instead of the duration that is set on the queue in general
 })
 ```
@@ -301,8 +314,8 @@ After you have received an item from a queue and processed it, you can delete it
 by calling `.ack()` with the unique `ackId` returned:
 
 ```js
-queue.get(function(err, msg) {
-    queue.ack(msg.ack, function(err, id) {
+queue.get((err, msg) => {
+    queue.ack(msg.ack, (err, id) => {
         // this message has now been removed from the queue
     })
 })
@@ -315,8 +328,8 @@ to process it, you can `.ping()` the message to tell the queue that you are
 still alive and continuing to process the message:
 
 ```js
-queue.get(function(err, msg) {
-    queue.ping(msg.ack, function(err, id) {
+queue.get((err, msg) => {
+    queue.ping(msg.ack, (err, id) => {
         // this message has had it's visibility window extended
     })
 })
@@ -325,8 +338,8 @@ queue.get(function(err, msg) {
 You can also choose the visibility time that gets added by the ping operation by passing the `visibility` option:
 
 ```js
-queue.get(function(err, msg) {
-    queue.ping(msg.ack, { visibility: 10 }, function(err, id) {
+queue.get((err, msg) => {
+    queue.ping(msg.ack, { visibility: 10 }, (err, id) => {
         // this message has had it's visibility window extended by 10s instead of the visibilty set on the queue in general
     })
 })
@@ -338,7 +351,7 @@ Returns the total number of messages that has ever been in the queue, including
 all current messages:
 
 ```js
-queue.total(function(err, count) {
+queue.total((err, count) => {
     console.log('This queue has seen %d messages', count)
 })
 ```
@@ -348,7 +361,7 @@ queue.total(function(err, count) {
 Returns the total number of messages that are waiting in the queue.
 
 ```js
-queue.size(function(err, count) {
+queue.size((err, count) => {
     console.log('This queue has %d current messages', count)
 })
 ```
@@ -359,7 +372,7 @@ Returns the total number of messages that are currently in flight. ie. that
 have been received but not yet acked:
 
 ```js
-queue.inFlight(function(err, count) {
+queue.inFlight((err, count) => {
     console.log('A total of %d messages are currently being processed', count)
 })
 ```
@@ -370,7 +383,7 @@ Returns the total number of messages that have been processed correctly in the
 queue:
 
 ```js
-queue.done(function(err, count) {
+queue.done((err, count) => {
     console.log('This queue has processed %d messages', count)
 })
 ```
@@ -382,7 +395,7 @@ if you wish, but delete them if you no longer need them. Perhaps do this using `
 for a regular cleaning:
 
 ```js
-queue.clean(function(err) {
+queue.clean((err) => {
     console.log('The processed messages have been deleted from the queue')
 })
 ```
@@ -410,17 +423,16 @@ or deleted. We always use MongoDB's excellent `collection.findAndModify()` so th
 each message is updated atomically inside MongoDB and we never have to fetch something,
 change it and store it back.
 
-## Note on MongoDB Version ##
+## Roadmap ##
 
-When using MongoDB v2.6 and the v1.3.23 version of the mongodb driver from npm, I was getting
-a weird error similar to "key $exists must not start with '$'". Yes, very strange. Anyway, the fix
-is to install a later version of the driver. I have tried this with v1.4.9 and it seems ok.
+We may add the ability for each function to return a promise in the future so it can be used as such, or with
+async/await.
 
 ## Releases ##
 
-Yay! We made it to v1.0. This means that development may slow down but to be honest, I have pretty
-much all of the functionality I want in this thing done. Thanks to everyone for feedback, reports
-and pull requests.
+### 4.0.0 (2019-02-20) ###
+
+* [NEW] Updated entire codebase to be compatible with the mongodb driver v3
 
 ### 2.1.0 (2016-04-21) ###
 
@@ -510,8 +522,36 @@ and pull requests.
 
 ## Author ##
 
-Written by [Andrew Chilton](http://chilts.org/) -
-[Twitter](https://twitter.com/andychilton).
+```
+$ npx chilts
+
+   ╒════════════════════════════════════════════════════╕
+   │                                                    │
+   │   Andrew Chilton (Personal)                        │
+   │   -------------------------                        │
+   │                                                    │
+   │          Email : andychilton@gmail.com             │
+   │            Web : https://chilts.org                │
+   │        Twitter : https://twitter.com/andychilton   │
+   │         GitHub : https://github.com/chilts         │
+   │         GitLab : https://gitlab.org/chilts         │
+   │                                                    │
+   │   Apps Attic Ltd (My Company)                      │
+   │   ---------------------------                      │
+   │                                                    │
+   │          Email : chilts@appsattic.com              │
+   │            Web : https://appsattic.com             │
+   │        Twitter : https://twitter.com/AppsAttic     │
+   │         GitLab : https://gitlab.com/appsattic      │
+   │                                                    │
+   │   Node.js / npm                                    │
+   │   -------------                                    │
+   │                                                    │
+   │        Profile : https://www.npmjs.com/~chilts     │
+   │           Card : $ npx chilts                      │
+   │                                                    │
+   ╘════════════════════════════════════════════════════╛
+```
 
 ## License ##
 

@@ -25,22 +25,23 @@ function nowPlusSecs(secs) {
     return (new Date(Date.now() + secs * 1000)).toISOString()
 }
 
-module.exports = function(mongoDbClient, name, opts) {
-    return new Queue(mongoDbClient, name, opts)
+module.exports = function(db, name, opts) {
+    return new Queue(db, name, opts)
 }
 
 // the Queue object itself
-function Queue(mongoDbClient, name, opts) {
-    if ( !mongoDbClient ) {
-        throw new Error("mongodb-queue: provide a mongodb.MongoClient")
+function Queue(db, name, opts) {
+    if ( !db ) {
+        throw new Error("mongodb-queue: provide a mongodb.MongoClient.db")
     }
     if ( !name ) {
         throw new Error("mongodb-queue: provide a queue name")
     }
     opts = opts || {}
 
+    this.db = db
     this.name = name
-    this.col = mongoDbClient.collection(name)
+    this.col = db.collection(name)
     this.visibility = opts.visibility || 30
     this.delay = opts.delay || 0
 
@@ -218,7 +219,7 @@ Queue.prototype.clean = function(callback) {
 Queue.prototype.total = function(callback) {
     var self = this
 
-    self.col.count(function(err, count) {
+    self.col.countDocuments(function(err, count) {
         if (err) return callback(err)
         callback(null, count)
     })
@@ -232,7 +233,7 @@ Queue.prototype.size = function(callback) {
         visible : { $lte : now() },
     }
 
-    self.col.count(query, function(err, count) {
+    self.col.countDocuments(query, function(err, count) {
         if (err) return callback(err)
         callback(null, count)
     })
@@ -247,7 +248,7 @@ Queue.prototype.inFlight = function(callback) {
         deleted : null,
     }
 
-    self.col.count(query, function(err, count) {
+    self.col.countDocuments(query, function(err, count) {
         if (err) return callback(err)
         callback(null, count)
     })
@@ -260,7 +261,7 @@ Queue.prototype.done = function(callback) {
         deleted : { $exists : true },
     }
 
-    self.col.count(query, function(err, count) {
+    self.col.countDocuments(query, function(err, count) {
         if (err) return callback(err)
         callback(null, count)
     })

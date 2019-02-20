@@ -6,7 +6,7 @@ var mongoDbQueue = require('../')
 
 var total = 250
 
-setup(function(db) {
+setup(function(client, db) {
 
     test('multi: add ' + total + ' messages, get ' + total + ' back', function(t) {
         var queue = mongoDbQueue(db, 'multi')
@@ -65,9 +65,9 @@ setup(function(db) {
         )
     })
 
-    test('db.close()', function(t) {
-        t.pass('db.close()')
-        db.close()
+    test('client.close()', function(t) {
+        t.pass('client.close()')
+        client.close()
         t.end()
     })
 

@@ -4,7 +4,7 @@ var test = require('tape')
 var setup = require('./setup.js')
 var mongoDbQueue = require('../')
 
-setup(function(db) {
+setup(function(client, db) {
 
     test('clean: check deleted messages are deleted', function(t) {
         var queue = mongoDbQueue(db, 'clean', { visibility : 3 })
@@ -163,9 +163,9 @@ setup(function(db) {
         )
     })
 
-    test('db.close()', function(t) {
-        t.pass('db.close()')
-        db.close()
+    test('client.close()', function(t) {
+        t.pass('client.close()')
+        client.close()
         t.end()
     })
 

@@ -4,7 +4,7 @@ var test = require('tape')
 var setup = require('./setup.js')
 var mongoDbQueue = require('../')
 
-setup(function(db) {
+setup(function(client, db) {
 
     test('first test', function(t) {
         var queue = mongoDbQueue(db, 'default')
@@ -104,9 +104,9 @@ setup(function(db) {
         )
     })
 
-    test('db.close()', function(t) {
-        t.pass('db.close()')
-        db.close()
+    test('client.close()', function(t) {
+        t.pass('client.close()')
+        client.close()
         t.end()
     })
 

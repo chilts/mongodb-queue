@@ -1,24 +1,42 @@
-var mongodb = require('mongodb')
+const mongodb = require('mongodb')
 
-var conStr = 'mongodb://localhost:27017/mongodb-queue'
+const url = 'mongodb://localhost:27017/'
+const dbName = 'mongodb-queue'
+
+const collections = [
+  'default',
+  'delay',
+  'multi',
+  'visibility',
+  'clean',
+  'ping',
+  'stats1',
+  'stats2',
+  'queue',
+  'dead-queue',
+  'queue-2',
+  'dead-queue-2',
+]
 
 module.exports = function(callback) {
-    mongodb.MongoClient.connect(conStr, function(err, db) {
-        if (err) throw err
-        var done = 0
-        // let's empty out some collections to make sure there are no messages
-        var collections = [
-            'default', 'delay', 'multi', 'visibility', 'clean', 'ping',
-            'stats1', 'stats2',
-            'queue', 'dead-queue', 'queue-2', 'dead-queue-2'
-        ]
-        collections.forEach(function(col) {
-            db.collection(col).remove(function() {
-                done += 1
-                if ( done === collections.length ) {
-                    callback(db)
-                }
-            })
-        })
+  const client = new mongodb.MongoClient(url, { useNewUrlParser: true })
+
+  client.connect(err => {
+    // we can throw since this is test-only
+    if (err) throw err
+
+    const db = client.db(dbName)
+
+    // empty out some collections to make sure there are no messages
+    let done = 0
+    collections.forEach((col) => {
+      db.collection(col).deleteMany(() => {
+        done += 1
+        if ( done === collections.length ) {
+          callback(client, db)
+        }
+      })
     })
+  })
+
 }

@@ -4,7 +4,7 @@ var test = require('tape')
 var setup = require('./setup.js')
 var mongoDbQueue = require('../')
 
-setup(function(db) {
+setup(function(client, db) {
 
     test('delay: check messages on this queue are returned after the delay', function(t) {
         var queue = mongoDbQueue(db, 'delay', { delay : 3 })
@@ -98,9 +98,9 @@ setup(function(db) {
         )
     })
 
-    test('db.close()', function(t) {
-        t.pass('db.close()')
-        db.close()
+    test('client.close()', function(t) {
+        t.pass('client.close()')
+        client.close()
         t.end()
     })
 
