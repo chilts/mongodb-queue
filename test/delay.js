@@ -52,6 +52,52 @@ setup(function(client, db) {
         )
     })
 
+    test('delay: check an individual message delay of type Date overrides the queue delay ', function(t) {
+        var queue = mongoDbQueue(db, 'delay')
+
+        async.series(
+            [
+                function(next) {
+                  queue.add('I am delayed by 3 seconds', { delay : new Date(Date.now() + 3000) }, function(err, id) {
+                        t.ok(!err, 'There is no error when adding a message.')
+                        t.ok(id, 'There is an id returned when adding a message.')
+                        next()
+                    })
+                },
+                function(next) {
+                    // get something now and it shouldn't be there
+                    queue.get(function(err, msg) {
+                        t.ok(!err, 'No error when getting no messages')
+                        t.ok(!msg, 'No msg received')
+                        // now wait 4s
+                        setTimeout(next, 4 * 1000)
+                    })
+                },
+                function(next) {
+                    // get something now and it SHOULD be there
+                    queue.get(function(err, msg) {
+                        t.ok(!err, 'No error when getting a message')
+                        t.ok(msg.id, 'Got a message id now that the message delay has passed')
+                        queue.ack(msg.ack, next)
+                    })
+                },
+                function(next) {
+                    queue.get(function(err, msg) {
+                        // no more messages
+                        t.ok(!err, 'No error when getting no messages')
+                        t.ok(!msg, 'No more messages')
+                        next()
+                    })
+                },
+            ],
+            function(err) {
+                if (err) t.fail(err)
+                t.pass('Finished test ok')
+                t.end()
+            }
+        )
+    })
+
     test('delay: check an individual message delay overrides the queue delay', function(t) {
         var queue = mongoDbQueue(db, 'delay')
 

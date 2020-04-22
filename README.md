@@ -172,6 +172,13 @@ var queue = mongoDbQueue(db, 'queue', { delay : 10 })
 
 This is now the default for every message added to the queue.
 
+If you set `delay` to be a Date it will delay the message until that date.
+
+To delay all messages until January 1st 2077, try this:
+```
+var queue = mongoDbQueue(db, 'queue', { delay : new Date('2077-01-01') })
+```
+
 ### deadQueue - Dead Message Queue ###
 
 Default: none
