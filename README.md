@@ -42,6 +42,14 @@ queue.add('Hello, World!', (err, id) => {
 })
 ```
 
+Using Promises
+
+```js
+// Message with payload 'Hello, World!' added.
+// 'id' is returned, useful for logging.
+var id = await queue.add('Hello, World!');
+```
+
 Get a message from the queue:
 
 ```js
@@ -53,6 +61,16 @@ queue.get((err, msg) => {
 })
 ```
 
+Using Promises
+
+```js
+var msg = await queue.get();
+console.log('msg.id=' + msg.id)
+console.log('msg.ack=' + msg.ack)
+console.log('msg.payload=' + msg.payload) // 'Hello, World!'
+console.log('msg.tries=' + msg.tries)
+```
+
 Ping a message to keep it's visibility open for long-running tasks
 
 ```js
@@ -62,6 +80,14 @@ queue.ping(msg.ack, (err, id) => {
 })
 ```
 
+Using Promises
+
+```js
+// Visibility window now increased for this message id.
+// 'id' is returned, useful for logging.
+var id = await queue.ping(msg.ack);
+```
+
 Ack a message (and remove it from the queue):
 
 ```js
@@ -69,6 +95,14 @@ queue.ack(msg.ack, (err, id) => {
     // This msg removed from queue for this ack.
     // The 'id' of the message is returned, useful for logging.
 })
+```
+
+Using Promises
+
+```js
+// This msg removed from queue for this ack.
+// The 'id' of the message is returned, useful for logging.
+var id = await queue.ack(msg.ack);
 ```
 
 By default, all old messages - even processed ones - are left in MongoDB. This is so that
@@ -81,6 +115,14 @@ queue.clean((err) => {
 })
 ```
 
+Using Promises
+
+```js
+// All processed (ie. acked) messages have been deleted
+await queue.clean();
+})
+```
+
 And if you haven't already, you should call this to make sure indexes have
 been added in MongoDB. Of course, if you've called this once (in some kind
 one-off script) you don't need to call it in your program. Of course, check
@@ -90,6 +132,13 @@ the changelock to see if you need to update them with new releases:
 queue.createIndexes((err, indexName) => {
     // The indexes needed have been added to MongoDB.
 })
+```
+
+Using Promises
+
+```js
+// The indexes needed have been added to MongoDB.
+var indexName = await queue.createIndexes();
 ```
 
 ## Creating a Queue ##
