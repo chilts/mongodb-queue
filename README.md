@@ -345,6 +345,17 @@ queue.get((err, msg) => {
 })
 ```
 
+You can also reset the job tries, effectively creating an atomic ack + add for the
+same job using `resetTries`:
+
+```js
+queue.get((err, msg) => {
+    queue.ping(msg.ack, { resetTries: true }, (err, id) => {
+        // This message now has 0 tries
+    })
+})
+```
+
 ### .total() ###
 
 Returns the total number of messages that has ever been in the queue, including

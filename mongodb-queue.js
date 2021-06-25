@@ -175,6 +175,11 @@ Queue.prototype.ping = function(ack, opts, callback) {
             visible : nowPlusSecs(visibility)
         }
     }
+
+    if (opts.resetTries) {
+        update.$set.tries = 0
+    }
+
     self.col.findOneAndUpdate(query, update, { returnOriginal : false }, function(err, msg, blah) {
         if (err) return callback(err)
         if ( !msg.value ) {
