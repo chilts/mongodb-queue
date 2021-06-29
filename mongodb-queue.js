@@ -44,6 +44,7 @@ function Queue(db, name, opts) {
     this.col = db.collection(name)
     this.visibility = opts.visibility || 30
     this.delay = opts.delay || 0
+    this.returnDocument = opts.returnDocument
 
     if ( opts.deadQueue ) {
         this.deadQueue = opts.deadQueue
@@ -120,8 +121,11 @@ Queue.prototype.get = function(opts, callback) {
             visible : nowPlusSecs(visibility),
         }
     }
+    var options = self._returnNewDocument({
+        sort: sort
+    })
 
-    self.col.findOneAndUpdate(query, update, { sort: sort, returnOriginal : false }, function(err, result) {
+    self.col.findOneAndUpdate(query, update, options, function(err, result) {
         if (err) return callback(err)
         var msg = result.value
         if (!msg) return callback()
@@ -175,7 +179,9 @@ Queue.prototype.ping = function(ack, opts, callback) {
             visible : nowPlusSecs(visibility)
         }
     }
-    self.col.findOneAndUpdate(query, update, { returnOriginal : false }, function(err, msg, blah) {
+    var options = self._returnNewDocument({})
+
+    self.col.findOneAndUpdate(query, update, options, function(err, msg, blah) {
         if (err) return callback(err)
         if ( !msg.value ) {
             return callback(new Error("Queue.ping(): Unidentified ack  : " + ack))
@@ -197,7 +203,8 @@ Queue.prototype.ack = function(ack, callback) {
             deleted : now(),
         }
     }
-    self.col.findOneAndUpdate(query, update, { returnOriginal : false }, function(err, msg, blah) {
+    var options = self._returnNewDocument({})
+    self.col.findOneAndUpdate(query, update, options, function(err, msg, blah) {
         if (err) return callback(err)
         if ( !msg.value ) {
             return callback(new Error("Queue.ack(): Unidentified ack : " + ack))
@@ -265,4 +272,13 @@ Queue.prototype.done = function(callback) {
         if (err) return callback(err)
         callback(null, count)
     })
+}
+
+Queue.prototype._returnNewDocument = function(options) {
+    if (this.returnDocument) {
+        options.returnDocument = 'after'
+    } else {
+        options.returnOriginal = false
+    }
+    return options
 }
