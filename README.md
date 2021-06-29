@@ -237,6 +237,18 @@ msg = {
 Notice that the payload from the `deadQueue` is exactly the same as the original message
 when it was on the original queue (except with the number of tries set to 5).
 
+### returnDocument ###
+
+The `mongodb` Node.js driver [deprecated](https://github.com/mongodb/node-mongodb-native/pull/2808)
+use of `returnOriginal` in favor of `returnDocument` when using `findOneAndUpdate()`.
+
+If you want to opt in to using the newer `returnDocument`, set the `returnDocument` option
+to `true`:
+
+```
+var queue = mongoDbQueue(db, 'queue', { returnDocument : true })
+```
+
 ## Operations ##
 
 ### .add() ###
