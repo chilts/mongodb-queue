@@ -9,7 +9,7 @@
   "dependencies": {},
   "devDependencies": {
     "async": "^2.6.2",
-    "mongodb": "^3.1.13",
+    "mongodb": "^4.0.0",
     "tape": "^4.10.1"
   },
   "homepage": "https://github.com/chilts/mongodb-queue",
