@@ -1,6 +1,6 @@
 {
   "name": "mongodb-queue",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Message queues which uses MongoDB.",
   "main": "mongodb-queue.js",
   "scripts": {
