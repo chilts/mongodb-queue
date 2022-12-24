@@ -70,7 +70,7 @@ Queue.prototype.add = function(payload, opts, callback) {
         opts = {}
     }
     var delay = opts.delay || self.delay
-    var visible = delay ? nowPlusSecs(delay) : now()
+    var visible = delay ? (delay instanceof Date ? delay.toISOString() : nowPlusSecs(delay)) : now()
 
     var msgs = []
     if (payload instanceof Array) {
