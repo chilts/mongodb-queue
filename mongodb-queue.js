@@ -70,7 +70,7 @@ Queue.prototype.add = function(payload, opts, callback) {
         opts = {}
     }
     var delay = opts.delay || self.delay
-    var visible = delay ? nowPlusSecs(delay) : now()
+    var visible = delay ? (delay instanceof Date ? delay.toISOString() : nowPlusSecs(delay)) : now()
 
     var msgs = []
     if (payload instanceof Array) {
@@ -92,9 +92,9 @@ Queue.prototype.add = function(payload, opts, callback) {
     }
 
     self.col.insertMany(msgs, function(err, results) {
-        if (err) return callback(err)
-        if (payload instanceof Array) return callback(null, '' + results.insertedIds)
-        callback(null, '' + results.ops[0]._id)
+        if (err) return callback(err);
+        if (payload instanceof Array) return callback(null, '' + results.insertedIds);
+        callback(null, '' + results.insertedIds["0"]);
     })
 }
 
@@ -121,8 +121,11 @@ Queue.prototype.get = function(opts, callback) {
         }
     }
 
-    self.col.findOneAndUpdate(query, update, { sort: sort, returnOriginal : false }, function(err, result) {
-        if (err) return callback(err)
+    self.col.findOneAndUpdate(query, update, { sort: sort, returnDocument : 'after' }, function(err, result) {
+        if (err){
+            return callback(err);
+        }
+
         var msg = result.value
         if (!msg) return callback()
 
@@ -152,7 +155,6 @@ Queue.prototype.get = function(opts, callback) {
                 return
             }
         }
-
         callback(null, msg)
     })
 }
@@ -175,7 +177,7 @@ Queue.prototype.ping = function(ack, opts, callback) {
             visible : nowPlusSecs(visibility)
         }
     }
-    self.col.findOneAndUpdate(query, update, { returnOriginal : false }, function(err, msg, blah) {
+    self.col.findOneAndUpdate(query, update, { returnDocument : 'after' }, function(err, msg, blah) {
         if (err) return callback(err)
         if ( !msg.value ) {
             return callback(new Error("Queue.ping(): Unidentified ack  : " + ack))
@@ -197,7 +199,8 @@ Queue.prototype.ack = function(ack, callback) {
             deleted : now(),
         }
     }
-    self.col.findOneAndUpdate(query, update, { returnOriginal : false }, function(err, msg, blah) {
+
+    self.col.findOneAndUpdate(query, update, { returnDocument : 'after' }, function(err, msg, blah) {
         if (err) return callback(err)
         if ( !msg.value ) {
             return callback(new Error("Queue.ack(): Unidentified ack : " + ack))
