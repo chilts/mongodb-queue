@@ -21,22 +21,18 @@ const collections = [
 module.exports = function(callback) {
   const client = new mongodb.MongoClient(url, { useNewUrlParser: true })
 
-  client.connect(err => {
-    // we can throw since this is test-only
-    if (err) throw err
-
+  client.connect().then(() => {
     const db = client.db(dbName)
 
     // empty out some collections to make sure there are no messages
     let done = 0
     collections.forEach((col) => {
-      db.collection(col).deleteMany(() => {
+      db.collection(col).deleteMany().then(() => {
         done += 1
         if ( done === collections.length ) {
           callback(client, db)
         }
       })
     })
-  })
-
+  }).catch(err => { throw err });
 }

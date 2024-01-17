@@ -52,15 +52,15 @@ function Queue(db, name, opts) {
 }
 
 Queue.prototype.createIndexes = function(callback) {
-    var self = this
+    var self = this;
 
-    self.col.createIndex({ deleted : 1, visible : 1 }, function(err, indexname) {
-        if (err) return callback(err)
-        self.col.createIndex({ ack : 1 }, { unique : true, sparse : true }, function(err) {
-            if (err) return callback(err)
-            callback(null, indexname)
+    self.col.createIndex({ deleted : 1, visible : 1 })
+        .then(() => {
+            self.col.createIndex({ ack : 1 }, { unique : true, sparse : true })
+                .then(indexname => callback(null, indexname))
+                .catch(callback);
         })
-    })
+        .catch(callback);
 }
 
 Queue.prototype.add = function(payload, opts, callback) {
@@ -91,11 +91,12 @@ Queue.prototype.add = function(payload, opts, callback) {
         })
     }
 
-    self.col.insertMany(msgs, function(err, results) {
-        if (err) return callback(err);
-        if (payload instanceof Array) return callback(null, '' + results.insertedIds);
-        callback(null, '' + results.insertedIds["0"]);
-    })
+    self.col.insertMany(msgs)
+        .then(results => {
+            if (payload instanceof Array) return callback(null, '' + results.insertedIds);
+            callback(null, '' + results.insertedIds["0"]);
+        })
+        .catch(callback);
 }
 
 Queue.prototype.get = function(opts, callback) {
@@ -121,42 +122,40 @@ Queue.prototype.get = function(opts, callback) {
         }
     }
 
-    self.col.findOneAndUpdate(query, update, { sort: sort, returnDocument : 'after' }, function(err, result) {
-        if (err){
-            return callback(err);
-        }
+    self.col.findOneAndUpdate(query, update, { sort: sort, returnDocument : 'after' })
+        .then(result => {
+            var msg = result.value
+            if (!msg) return callback()
 
-        var msg = result.value
-        if (!msg) return callback()
-
-        // convert to an external representation
-        msg = {
-            // convert '_id' to an 'id' string
-            id      : '' + msg._id,
-            ack     : msg.ack,
-            payload : msg.payload,
-            tries   : msg.tries,
-        }
-        // if we have a deadQueue, then check the tries, else don't
-        if ( self.deadQueue ) {
-            // check the tries
-            if ( msg.tries > self.maxRetries ) {
-                // So:
-                // 1) add this message to the deadQueue
-                // 2) ack this message from the regular queue
-                // 3) call ourself to return a new message (if exists)
-                self.deadQueue.add(msg, function(err) {
-                    if (err) return callback(err)
-                    self.ack(msg.ack, function(err) {
-                        if (err) return callback(err)
-                        self.get(callback)
-                    })
-                })
-                return
+            // convert to an external representation
+            msg = {
+                // convert '_id' to an 'id' string
+                id      : '' + msg._id,
+                ack     : msg.ack,
+                payload : msg.payload,
+                tries   : msg.tries,
             }
-        }
-        callback(null, msg)
-    })
+            // if we have a deadQueue, then check the tries, else don't
+            if ( self.deadQueue ) {
+                // check the tries
+                if ( msg.tries > self.maxRetries ) {
+                    // So:
+                    // 1) add this message to the deadQueue
+                    // 2) ack this message from the regular queue
+                    // 3) call ourself to return a new message (if exists)
+                    self.deadQueue.add(msg, function(err) {
+                        if (err) return callback(err)
+                        self.ack(msg.ack, function(err) {
+                            if (err) return callback(err)
+                            self.get(callback)
+                        })
+                    })
+                    return
+                }
+            }
+            callback(null, msg)
+        })
+        .catch(callback);
 }
 
 Queue.prototype.ping = function(ack, opts, callback) {
@@ -177,13 +176,12 @@ Queue.prototype.ping = function(ack, opts, callback) {
             visible : nowPlusSecs(visibility)
         }
     }
-    self.col.findOneAndUpdate(query, update, { returnDocument : 'after' }, function(err, msg, blah) {
-        if (err) return callback(err)
+    self.col.findOneAndUpdate(query, update, { returnDocument : 'after' }).then((msg)  => {
         if ( !msg.value ) {
             return callback(new Error("Queue.ping(): Unidentified ack  : " + ack))
         }
         callback(null, '' + msg.value._id)
-    })
+    }).catch(callback)
 }
 
 Queue.prototype.ack = function(ack, callback) {
@@ -200,13 +198,12 @@ Queue.prototype.ack = function(ack, callback) {
         }
     }
 
-    self.col.findOneAndUpdate(query, update, { returnDocument : 'after' }, function(err, msg, blah) {
-        if (err) return callback(err)
+    self.col.findOneAndUpdate(query, update, { returnDocument : 'after' }).then((msg) => {
         if ( !msg.value ) {
             return callback(new Error("Queue.ack(): Unidentified ack : " + ack))
         }
         callback(null, '' + msg.value._id)
-    })
+    }).catch(callback)
 }
 
 Queue.prototype.clean = function(callback) {
@@ -216,16 +213,15 @@ Queue.prototype.clean = function(callback) {
         deleted : { $exists : true },
     }
 
-    self.col.deleteMany(query, callback)
+    self.col.deleteMany(query).then(() => callback(null))
 }
 
 Queue.prototype.total = function(callback) {
     var self = this
 
-    self.col.countDocuments(function(err, count) {
-        if (err) return callback(err)
+    self.col.countDocuments().then((count) => {
         callback(null, count)
-    })
+    }).catch(callback);
 }
 
 Queue.prototype.size = function(callback) {
@@ -236,10 +232,9 @@ Queue.prototype.size = function(callback) {
         visible : { $lte : now() },
     }
 
-    self.col.countDocuments(query, function(err, count) {
-        if (err) return callback(err)
+    self.col.countDocuments(query).then(count => {
         callback(null, count)
-    })
+    }).catch(callback);
 }
 
 Queue.prototype.inFlight = function(callback) {
@@ -251,10 +246,9 @@ Queue.prototype.inFlight = function(callback) {
         deleted : null,
     }
 
-    self.col.countDocuments(query, function(err, count) {
-        if (err) return callback(err)
+    self.col.countDocuments(query).then((count) => {
         callback(null, count)
-    })
+    }).catch(callback);
 }
 
 Queue.prototype.done = function(callback) {
@@ -264,8 +258,7 @@ Queue.prototype.done = function(callback) {
         deleted : { $exists : true },
     }
 
-    self.col.countDocuments(query, function(err, count) {
-        if (err) return callback(err)
+    self.col.countDocuments(query).then((count) => {
         callback(null, count)
-    })
+    }).catch(callback);
 }
