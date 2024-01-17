@@ -1,16 +1,18 @@
 {
   "name": "mongodb-queue",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "Message queues which uses MongoDB.",
   "main": "mongodb-queue.js",
   "scripts": {
     "test": "set -e; for FILE in test/*.js; do echo --- $FILE ---; node $FILE; done"
   },
   "dependencies": {},
+  "peerDependencies": {
+    "mongodb": "^3.7.0 || ^4.0.0 || ^5.0.0"
+  },
   "devDependencies": {
-    "async": "^2.6.2",
-    "mongodb": "^4.0.0",
-    "tape": "^4.10.1"
+    "async": "^3.2.5",
+    "tape": "^5.7.3"
   },
   "homepage": "https://github.com/chilts/mongodb-queue",
   "repository": {
